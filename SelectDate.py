@@ -1,7 +1,17 @@
 from datetime import datetime, timedelta
 from random import randrange
 from InvalidAction import InvalidDate
+import logging
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+file_handler = logging.FileHandler("date.log")
+file_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
 
 def select_date():
     # while True:
@@ -21,24 +31,31 @@ def select_date():
     #     else:
     #         return date_obj
 
+
     return gen_random_day()
 
 # check if
 def valid_date(a_date: datetime):
     if a_date >= datetime.today():
+        logging.warning("Invalid date: Future")
         raise InvalidDate("Cannot process transactions that occur in the future.")
     if a_date <= datetime.today() - timedelta(days=365*20):
+        logging.warning("Invalid date: Too far in past")
         raise InvalidDate("Cannot process transactions that occur over 20 years ago.")
 
 # check if a given date falls on this year
 def this_year(a_date: datetime):
     if a_date.year == datetime.today().year:
         return True
+    logging.warning("Date does not fall on this year")
     return False
 
-# a random day generator to automate date seletion
+# a random day generator to automate date selection
 # only used for testing
 def gen_random_day():
+
+    logging.info("Creating random date")
+
     start = datetime(2020, 1, 1)
     end = datetime.today()
     delta = end - start
