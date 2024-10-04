@@ -1,12 +1,13 @@
 import requests
 from InvalidAction import StockNotFound
-from Constants import get_key
+import Constants
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.WARNING)
 
-formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - '
+                                  '%(module)s - %(funcName)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
 file_handler = logging.FileHandler("stockdata.log")
 file_handler.setFormatter(formatter)
@@ -14,37 +15,42 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
+cad_to_usd_rate = 0.72
+
+def convert_cad_to_usd(cad: float) -> float:
+    return cad * cad_to_usd_rate
+
+def convert_usd_to_cad(usd: float) -> float:
+    return usd / cad_to_usd_rate
+
 def get_data(ticker):
-    url = (f"https://www.alphavantage.co/query?function"
-           f"=TIME_SERIES_DAILY&symbol={ticker}&outputsize=compact&apikey={get_key()}")
-    r = requests.get(url)
+    url = f"https://www.alphavantage.co/query"
+
+    parameters = {
+        "function": "GLOBAL_QUOTE",
+        "symbol": ticker,
+        "apikey": Constants.get_av_key()
+    }
+
+    r = requests.get(url, params=parameters)
     data = r.json()
 
     return data
 
 def get_price(ticker):
 
-    logging.info(f"Retrieving stock price for {ticker}")
-
-    test_values = {"AAPL":226.78, "GOOGL":165.86, "TSLA":249.02, "VFV.TRT":136.60}
-
+    test_values = {"AAPL":226.78, "GOOGL":165.86, "TSLA":249.02, "VFV.TRT":136.60, "TEST":100}
     if ticker in test_values:
+        logger.info(f"Retrieving default price for {ticker}")
         return test_values[ticker]
 
-    logging.info(f"Calling API for {ticker}")
+    logger.info(f"Calling API for {ticker}")
     data = get_data(ticker)
-    data_keys = list(data.keys())
 
-    if data_keys[0] == "Error Message":
-        raise StockNotFound(data["Error Message"])
-    elif data_keys[0] == "Meta Data":
-        first_day = next(iter(data["Time Series (Daily)"]))
-        price_close = data["Time Series (Daily)"][first_day]["4. close"]
-        price_close = float(price_close)
-
-        return price_close
+    if data["Global Quote"]:
+        return float(data["Global Quote"]["05. price"])
     else:
-        raise Exception("Error pertaining to API call.")
+        raise StockNotFound(f"{ticker} was not found.")
 
 def main():
     ticker = "VFV.TO"
@@ -60,6 +66,11 @@ def main():
     print(f"${price:,.2f}")
     price = get_price("TSLA")
     print(f"${price:,.2f}")
+    try:
+        print(get_price("AMZN"))
+        print(get_price("AMZNNNN"))
+    except StockNotFound as e:
+        logger.exception(e)
 
 
 if __name__ == "__main__":
