@@ -1,5 +1,3 @@
-from dataclasses import dataclass
-
 import StockData
 import logging
 
@@ -70,6 +68,21 @@ class Stock:
         if self.value_book_sell == 0:
             return "0.00%"
         return f"{self.close_pl / (self.qty_closed * self.price_avg_buy) * 100 :,.2f}%"
+
+    def buy(self, qty: float, price: float) -> None:
+        # performing required calculations for buying a stock
+        self.qty_open += qty
+        self.value_book += (qty * price)
+        self.qty_total += qty
+        self.value_total += (qty * price)
+
+    def sell(self, qty: float, price: float) -> None:
+        # performing required calculations for selling stock
+        self.qty_open = self.qty_open - qty
+        self.qty_closed += qty
+        self.value_book -= (qty * self.price_avg_buy)
+        self.value_book_sell += qty * (price - self.price_avg_buy)
+        self.price_avg_sell = self.value_book_sell / self.qty_closed
 
     @staticmethod
     def header_str():

@@ -1,7 +1,8 @@
 import logging
 from datetime import datetime
 import Date
-from InvalidAction import OverLimit, InsufficientBalance
+from InvalidAction import OverLimit, InsufficientBalance, InsufficientShares
+from Portfolio import Portfolio
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
@@ -30,6 +31,8 @@ class TFSA:
         # tracking contribution snd withdrawal history as list of [(date, amount)]
         self.contributions: list[tuple[datetime, float]] = []
         self.withdrawals: list[tuple[datetime, float]] = []
+
+        self.portfolio: Portfolio = Portfolio()
 
     # how much tfsa space the user should have based on CRA limits
     @property
@@ -78,3 +81,53 @@ class TFSA:
 
         self.balance = remain
         self.withdrawals.append((date, amount))
+
+
+    # buying a stock
+    # precondition: must have sufficient cash balance
+    def buy(self, date: datetime, ticker: str, qty: float, price: float, fee: float=0) -> None:
+        logger.info(f"Buying {ticker}")
+
+        # check if balance is sufficient to process purchase
+        remain = self.balance - (qty * price) - fee
+        if remain < 0:
+            raise InsufficientBalance(f"Cannot buy {ticker} as doing so would put account balance at -${-remain:.2f}.")
+
+        self.balance = remain # subtract balance based on how much bought
+
+        self.portfolio.buy(date, ticker, qty, price, fee)
+
+    # selling a stock
+    # precondition: must own sufficient shares to sell
+    def sell(self, date: datetime, ticker: str, qty: float, price: float, fee: float=0) -> None:
+        logger.info(f"Selling {ticker}")
+
+        try:
+            self.portfolio.sell(date, ticker, qty, price, fee)
+        except InsufficientShares as e:
+            logger.exception(e)
+        else: # if no exception caught
+            self.balance -= fee # subtract fee from balance
+            self.balance += (qty * price) # add balance based on how much sold
+
+    def __str__(self):
+        # basic tfsa account details
+        represent = (f"\nTotal Limit: ${self.limit_total:,.2f}, Avl Limit: ${self.limit_avl:,.2f}, "
+                      f"Balance: ${self.balance:,.2f}, Avl Room: ${self.room_avl:,.2f}")
+        # list of all contributions
+        if self.contributions:
+            represent += "\nContributions:\n"
+            represent += "\n".join(f"Date: {c[0]:}, Amount: ${c[1]:,.2f}" for c in self.contributions)
+        # list of all withdrawals
+        if self.withdrawals:
+            represent += "\nWithdrawals:\n"
+            represent += "\n".join(f"Date: {w[0]}, Amount: ${w[1]:,.2f}" for w in self.withdrawals)
+
+        return represent
+
+def main():
+    acc = TFSA(2000)
+    print(acc)
+
+if __name__ == '__main__':
+    main()

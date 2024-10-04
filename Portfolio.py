@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-from InvalidAction import InsufficientBalance, InsufficientShares
+from InvalidAction import InsufficientShares
 from Stock import Stock
 
 logger = logging.getLogger(__name__)
@@ -33,16 +33,13 @@ class Portfolio:
     def buy(self, date: datetime, ticker: str, qty: float, price: float, fee: float=0) -> None:
         # if not in portfolio, add the new stock to the portfolio
         if ticker not in self.stocks:
-            buy_stock = Stock(ticker)
-            self.stocks[ticker] = buy_stock
+            stock_buying = Stock(ticker)
+            self.stocks[ticker] = stock_buying
         else:
-            buy_stock = self.stocks[ticker]
+            stock_buying = self.stocks[ticker]
 
         # performing required calculations for buying a stock
-        buy_stock.qty_open += qty
-        buy_stock.value_book += (qty * price)
-        buy_stock.qty_total += qty
-        buy_stock.value_total += (qty * price)
+        stock_buying.buy(qty, price)
         self.history_buy.append((date, ticker, qty, price, fee))
 
 
@@ -55,20 +52,15 @@ class Portfolio:
                                      f"Transaction not accepted.")
 
         # get stock object that we are selling
-        sell_stock = self.stocks[ticker]
+        stock_selling = self.stocks[ticker]
 
-        qty_remain = sell_stock.qty_open - qty
         # check if sufficient shares owned
-        if qty_remain < 0:
+        if stock_selling.qty_open - qty < 0:
             raise InsufficientShares(f"Cannot sell {ticker} as you do not own sufficient shares. "
                                      f"Transaction not accepted.")
 
         # performing required calculations for selling stock
-        sell_stock.qty_open = qty_remain
-        sell_stock.qty_closed += qty
-        sell_stock.value_book -= (qty * sell_stock.price_avg_buy)
-        sell_stock.value_book_sell += qty * (price - sell_stock.price_avg_buy)
-        sell_stock.price_avg_sell = sell_stock.value_book_sell / sell_stock.qty_closed
+        stock_selling.sell(qty, price)
         self.history_sell.append((date, ticker, qty, price, fee))
 
     # return portfolio info as string
@@ -94,3 +86,16 @@ class Portfolio:
             msg = "No sell history"
             logger.warning(msg)
             return msg
+
+    def __str__(self) -> str:
+        represent = f"\n{Stock.header_str()}"
+        if self.stocks:
+            represent += self.get_portfolio() + "\n"
+        if self.history_buy:
+            represent += "Buy History\n"
+            represent += self.get_history_buy() + "\n"
+        if self.history_sell:
+            represent += "Sell History\n"
+            represent += self.get_history_sell() + "\n"
+
+        return represent

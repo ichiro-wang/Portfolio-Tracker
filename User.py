@@ -1,9 +1,6 @@
-from datetime import datetime
-
-from Portfolio import Portfolio
 from Stock import Stock
 import Date
-from InvalidAction import InsufficientShares, InsufficientBalance, OverLimit
+from InvalidAction import InsufficientBalance, OverLimit
 import logging
 from TFSA import TFSA
 
@@ -28,14 +25,7 @@ class User:
         self.first: str = first
         self.last: str = last
         self.year_of_birth: int = year_of_birth
-        self.tfsa = TFSA(year_of_birth)
-        self.portfolio = Portfolio()
-
-        # track stock portfolio
-        # self.portfolio: dict[str, Stock] = {}
-        # date: datetime, type ("buy"/"sell"): str, ticker: str, qty: float, price: float, fees: float
-        self.history_buy: list[tuple[datetime, str, str, float, float, float]] = []
-        self.history_sell: list[tuple[datetime, str, str, float, float, float]] = []
+        self.tfsa: TFSA = TFSA(year_of_birth)
 
         logger.info(f"Created User: {self.first} {self.last} {self.year_of_birth}")
 
@@ -47,61 +37,13 @@ class User:
     def name_lf(self) -> str:
         return f"{self.last}, {self.first}"
 
-
-    # buying a stock
-    # precondition: must have sufficient cash balance
-    def buy(self, date: datetime, ticker: str, qty: float, price: float, fee: float=0) -> None:
-        logger.info(f"Buying {ticker}")
-
-        # check if balance is sufficient to process purchase
-        remain = self.tfsa.balance - (qty * price) - fee
-        if remain < 0:
-            raise InsufficientBalance(f"Cannot buy {ticker} as doing so would put account balance at -${-remain:.2f}.")
-
-        self.tfsa.balance = remain # subtract balance based on how much bought
-
-        self.portfolio.buy(date, ticker, qty, price, fee)
-
-
-    # selling a stock
-    # precondition: must own sufficient shares to sell
-    def sell(self, date: datetime, ticker: str, qty: float, price: float, fee: float=0) -> None:
-        logger.info(f"Selling {ticker}")
-
-        try:
-            self.portfolio.sell(date, ticker, qty, price, fee)
-        except InsufficientShares as e:
-            logger.exception(e)
-        else: # if no exception caught
-            self.tfsa.balance -= fee # subtract fee from balance
-            self.tfsa.balance += (qty * price) # add balance based on how much sold
-
-
-
     # str of user object
     def __str__(self) -> str:
         represent = f"Details for {self.name_lf}:"
-        my_tfsa = self.tfsa
 
-        # basic tfsa account details
-        represent += (f"\nTotal Limit: ${my_tfsa.limit_total:,.2f}, Avl Limit: ${my_tfsa.limit_avl:,.2f}, "
-                      f"Balance: ${my_tfsa.balance:,.2f}, Avl Room: ${my_tfsa.room_avl:,.2f}")
+        represent += str(self.tfsa)
 
-        # list of all contributions
-        if my_tfsa.contributions:
-            represent += "\nContributions:\n"
-            represent += "\n".join(f"Date: {c[0]}, Amount: ${c[1]:,.2f}" for c in my_tfsa.contributions)
-
-        # list of all withdrawals
-        if my_tfsa.withdrawals:
-            represent += "\nWithdrawals:\n"
-            represent += "\n".join(f"Date: {w[0]}, Amount: ${w[1]:,.2f}" for w in my_tfsa.withdrawals)
-
-        # list of all owned stocks
-        if self.portfolio:
-            represent += "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nPortfolio:"
-            represent += f"\n{Stock.header_str()}\n"
-            represent += self.portfolio.get_portfolio()
+        represent += str(self.tfsa.portfolio)
 
         return represent
 
@@ -127,25 +69,25 @@ def main():
 
     try:
         ticker = "gooGl".upper()
-        joe_biden.buy(Date.gen_random_day(), ticker, 10, 160)
-        joe_biden.buy(Date.gen_random_day(), "GOOGL", 20, 100)
+        joe_biden.tfsa.buy(Date.gen_random_day(), ticker, 10, 160)
+        joe_biden.tfsa.buy(Date.gen_random_day(), "GOOGL", 20, 100)
         ticker = "AapL".upper()
-        joe_biden.buy(Date.gen_random_day(), ticker, 5, 100)
-        # joe_biden.buy(SelectDate.gen_random_day(), "AAPL", 5, 100)
+        joe_biden.tfsa.buy(Date.gen_random_day(), ticker, 5, 100)
+        # joe_biden.tfsa.buy(SelectDate.gen_random_day(), "AAPL", 5, 100)
     except InsufficientBalance as e:
         logger.exception(e)
 
     # try:
-    #     joe_biden.sell("GOOGL", 32, 120)
+    #     joe_biden.tfsa.sell("GOOGL", 32, 120)
     # except InsufficientShares as e:
     #     logger.exception(e)
 
     print(f"\n{Stock.header_str()}")
-    print(joe_biden.portfolio.get_portfolio())
+    print(joe_biden.tfsa.portfolio.get_portfolio())
 
     # try:
-    joe_biden.sell(Date.gen_random_day(), "GOOGL", 5, 160)
-    joe_biden.sell(Date.gen_random_day(), "GOOGL", 5, 200)
+    joe_biden.tfsa.sell(Date.gen_random_day(), "GOOGL", 5, 160)
+    joe_biden.tfsa.sell(Date.gen_random_day(), "GOOGL", 5, 200)
 
     #     joe_biden.sell("TSLA", 10, 10)
     # except InsufficientShares as e:
@@ -153,13 +95,11 @@ def main():
 
     print()
 
-    joe_biden.buy(Date.gen_random_day(), "TEST", 4, 80)
-    joe_biden.sell(Date.gen_random_day(), "TEST", 4, 60)
+    joe_biden.tfsa.buy(Date.gen_random_day(), "TEST", 4, 80)
+    joe_biden.tfsa.sell(Date.gen_random_day(), "TEST", 4, 60)
     # joe_biden.buy(SelectDate.gen_random_day(), "AMZN", 4, 100)
-    print(joe_biden.portfolio.stocks["GOOGL"].value_book_sell)
+    print(joe_biden.tfsa.portfolio.stocks["GOOGL"].value_book_sell)
     print(joe_biden)
-    print(joe_biden.portfolio.get_history_buy())
-    print(joe_biden.portfolio.get_history_sell())
 
 if __name__ == "__main__":
     main()
