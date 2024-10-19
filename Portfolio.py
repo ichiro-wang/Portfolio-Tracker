@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+import StockData
 from InvalidAction import InsufficientShares
 from Stock import Stock
 
@@ -10,7 +11,7 @@ logger.setLevel(logging.WARNING)
 formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - '
                                   '%(module)s - %(funcName)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
-file_handler = logging.FileHandler("portfolio.log")
+file_handler = logging.FileHandler("logs/portfolio.log")
 file_handler.setFormatter(formatter)
 
 stream_handler = logging.StreamHandler()
@@ -26,8 +27,18 @@ class Portfolio:
         self.stocks: dict[str, Stock] = {}
 
         # date: datetime, str, ticker: str, qty: float, price: float, fees: float
-        self.history_buy: list[tuple[datetime, str, float, float, float]] = []
-        self.history_sell: list[tuple[datetime, str, float, float, float]] = []
+        self.history_buy: list[dict[str, datetime | str | float]] = []
+        self.history_sell: list[dict[str, datetime | str | float]] = []
+
+    @property
+    def value_book_total(self) -> float:
+        return sum(StockData.usd_to_cad(stock.value_book) if Stock.currency(stock.ticker) == "USD" else stock.value_book
+                   for stock in self.stocks.values())
+
+    @property
+    def value_mkt_total(self) -> float:
+        return sum(StockData.usd_to_cad(stock.value_mkt) if Stock.currency(stock.ticker) == "USD" else stock.value_mkt
+                   for stock in self.stocks.values())
 
     # buying a stock
     def buy(self, date: datetime, ticker: str, qty: float, price: float, fee: float=0) -> None:
@@ -39,9 +50,8 @@ class Portfolio:
             stock_buying = self.stocks[ticker]
 
         # performing required calculations for buying a stock
-        stock_buying.buy(qty, price)
-        self.history_buy.append((date, ticker, qty, price, fee))
-
+        stock_buying.adjust_stats("BUY", qty, price)
+        self.history_buy.append({"date": date, "ticker": ticker, "qty": qty, "price": price, "fee": fee})
 
     # selling a stock
     # precondition: must own sufficient shares to sell
@@ -60,8 +70,8 @@ class Portfolio:
                                      f"Transaction not accepted.")
 
         # performing required calculations for selling stock
-        stock_selling.sell(qty, price)
-        self.history_sell.append((date, ticker, qty, price, fee))
+        stock_selling.adjust_stats("SELL", qty, price)
+        self.history_sell.append({"date": date, "ticker": ticker, "qty": qty, "price": price, "fee": fee})
 
     # return portfolio info as string
     def get_portfolio(self) -> str:
@@ -71,31 +81,33 @@ class Portfolio:
             logger.warning("No portfolio")
             return "Empty portfolio"
 
-    def get_history_buy(self) -> str:
-        if self.history_buy:
-            return "\n".join(f"{b[0].strftime('%Y-%m-%d')}, {b[1]}, {b[2]}, {b[3]}, {b[4]}" for b in self.history_buy)
+    def get_history(self, transaction: str) -> str:
+        transaction = transaction.lower()
+        if transaction == "buy":
+            history = self.history_buy
+        elif transaction == "sell":
+            history = self.history_sell
         else:
-            msg = "No buy history"
-            logger.warning(msg)
-            return msg
+            return "Cannot retrieve history"
 
-    def get_history_sell(self) -> str:
-        if self.history_sell:
-            return "\n".join(f"{w[0].strftime('%Y-%m-%d')}, {w[1]}, {w[2]}, {w[3]}, {w[4]}" for w in self.history_sell)
+        if history:
+            return "\n".join(
+                f"{h['date'].strftime('%Y-%m-%d')}, {h['ticker']}, {h['qty']}, "
+                f"{h['price']}, {h['fee']}" for h in history)
         else:
-            msg = "No sell history"
+            msg = f"No {transaction} history"
             logger.warning(msg)
             return msg
 
     def __str__(self) -> str:
         represent = f"\n{Stock.header_str()}"
         if self.stocks:
-            represent += self.get_portfolio() + "\n"
+            represent += "\n" + self.get_portfolio()
         if self.history_buy:
-            represent += "Buy History\n"
-            represent += self.get_history_buy() + "\n"
+            represent += "\nBuy History"
+            represent += "\n" + self.get_history("buy")
         if self.history_sell:
-            represent += "Sell History\n"
-            represent += self.get_history_sell() + "\n"
+            represent += "\nSell History"
+            represent += "\n" + self.get_history("sell")
 
         return represent

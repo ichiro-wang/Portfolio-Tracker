@@ -4,23 +4,24 @@ import Constants
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - '
                                   '%(module)s - %(funcName)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
-file_handler = logging.FileHandler("stockdata.log")
+file_handler = logging.FileHandler("logs/stockdata.log")
 file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
 
 
 cad_to_usd_rate = 0.72
+# cad_to_usd_rate = 0.5
 
-def convert_cad_to_usd(cad: float) -> float:
+def cad_to_usd(cad: float) -> float:
     return cad * cad_to_usd_rate
 
-def convert_usd_to_cad(usd: float) -> float:
+def usd_to_cad(usd: float) -> float:
     return usd / cad_to_usd_rate
 
 def get_data(ticker):
@@ -33,20 +34,18 @@ def get_data(ticker):
     }
 
     r = requests.get(url, params=parameters)
-    data = r.json()
+    return r.json()
 
-    return data
+def get_price(ticker) -> float:
 
-def get_price(ticker):
-
-    test_values = {"AAPL":226.78, "GOOGL":165.86, "TSLA":249.02, "VFV.TRT":136.60, "TEST":100}
+    # test_values = {"TEST":100}
+    test_values = {"AAPL":235, "GOOGL":163.42, "TSLA":249.02, "VFV.TRT":136.60, "TEST":100}
     if ticker in test_values:
         logger.info(f"Retrieving default price for {ticker}")
         return test_values[ticker]
 
     logger.info(f"Calling API for {ticker}")
     data = get_data(ticker)
-
     if data["Global Quote"]:
         return float(data["Global Quote"]["05. price"])
     else:

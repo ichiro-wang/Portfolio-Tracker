@@ -9,7 +9,7 @@ logger.setLevel(logging.WARNING)
 formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - '
                                   '%(module)s - %(funcName)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
-file_handler = logging.FileHandler("date.log")
+file_handler = logging.FileHandler("logs/date.log")
 file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
@@ -35,15 +35,28 @@ def select_date() -> datetime:
     return gen_random_day()
 
 # check if given date is valid
-def valid_date(date: datetime) -> None:
+def valid_date(date: datetime) -> bool:
     if date >= datetime.today():
-        raise InvalidDate("Cannot process transactions that occur in the future.")
+        return False
+        # raise InvalidDate("Cannot process transactions that occur in the future.")
     if date <= datetime.today() - timedelta(days=365*20):
-        raise InvalidDate("Cannot process transactions that occur over 20 years ago.")
+        return False
+        # raise InvalidDate("Cannot process transactions that occur over 20 years ago.")
+    return True
 
 # check if a given date falls on this year
 def this_year(date: datetime) -> bool:
     if date.year == datetime.today().year:
+        return True
+    return False
+
+def is_today(date: datetime) -> bool:
+    if date.date() == datetime.today().date():
+        return True
+    return False
+
+def within_last_hour(date: datetime) -> bool:
+    if datetime.now() - timedelta(hours=1) <= date:
         return True
     return False
 
@@ -62,6 +75,11 @@ def gen_random_day() -> datetime:
 def main():
     a_day = select_date()
     print(a_day)
+
+    diff_day = a_day - timedelta(hours=2)
+    print(diff_day)
+
+    print(within_last_hour(diff_day))
 
 if __name__ == "__main__":
     main()
