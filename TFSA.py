@@ -1,10 +1,10 @@
 import logging
 from datetime import datetime
 import Date
-from InvalidAction import OverLimit, InsufficientBalance, InsufficientShares
+from InvalidAction import OverLimit, InsufficientBalance
 from Portfolio import Portfolio
-from Stock import Stock
-from StockData import usd_to_cad
+from Portfolio import history_insert_index # helper method to keep history sorted
+from collections import deque
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
@@ -26,12 +26,13 @@ TFSA_LIMIT = {2009: 5000, 2010: 5000, 2011: 5000, 2012: 5000, 2013: 5500, 2014: 
 
 class TFSA:
     def __init__(self, year_of_birth: int):
-        self.year_eligible = max(year_of_birth + 18, 2009) # eligibility starts at 18
+        self.year_eligible = max(year_of_birth + 18, 2009) # tfsa room builds up starting at 18
         self.balance_cash: float = 0 # represents cash balance_cash
 
+        self.transaction_id = 0
         # tracking contribution and withdrawal history as list of dicts
-        self.contributions: list[dict[str, datetime | float]] = []
-        self.withdrawals: list[dict[str, datetime | float]] = []
+        self.contributions: deque[dict[str, datetime | float]] = deque()
+        self.withdrawals: deque[dict[str, datetime | float]] = deque()
 
         self.portfolio: Portfolio = Portfolio()
 
@@ -60,6 +61,17 @@ class TFSA:
     def get_cont_room_by_year(self) -> dict[int, int]:
         return {year: TFSA_LIMIT[year] for year in TFSA_LIMIT if self.year_eligible <= year}
 
+    def history_add(self, history_elm: {}, transaction_type: str) -> None:
+        transaction_type = transaction_type.lower()
+        history = self.contributions if transaction_type == "contribution" else self.withdrawals
+        date = history_elm["date"]
+
+        if history and date < history[0]["date"]:
+            insert_index = history_insert_index(date, history)
+            history.insert(insert_index, history_elm)
+        else:
+            history.appendleft(history_elm)
+
     # contributing to tfsa
     # precondition: added amount must not go over available limit
     def contribute(self, date: datetime, amount: float) -> None:
@@ -72,7 +84,11 @@ class TFSA:
                             f"Transaction not accepted.")
 
         self.balance_cash = balance_new
-        self.contributions.append({"date": date, "amount": amount})
+
+        # add to history
+        history_elm = {"id": self.transaction_id, "date": date, "amount": amount}
+        self.history_add(history_elm, "contribution")
+        self.transaction_id += 1
 
     # withdrawing from tfsa
     # precondition: account must have sufficient cash balance_cash to withdraw
@@ -84,8 +100,13 @@ class TFSA:
                 f"Cannot withdraw. Withdrawal would put account balance at: -${-remain:.2f}. Transaction not accepted.")
 
         self.balance_cash = remain
-        self.withdrawals.append({"date": date, "amount": amount})
 
+        history_elm = {"id": self.transaction_id, "date": date, "amount": amount}
+        self.history_add(history_elm, "withdrawal")
+        self.transaction_id += 1
+
+
+    """
     # buying a stock
     # precondition: must have sufficient cash balance_cash
     def buy(self, date: datetime, ticker: str, qty: float, price: float, fee: float=0) -> None:
@@ -119,26 +140,56 @@ class TFSA:
                 transaction = usd_to_cad(transaction)
 
             self.balance_cash += transaction
+    """
+
+    def str_history(self, transaction_type: str) -> str:
+        history = self.contributions if transaction_type == "contribution" else self.withdrawals
+
+        if history:
+            return "\n".join(f"ID: {h['id']} {h['date']:}, Date: {h['date']:}, Amount: ${h['amount']:,.2f}"
+                             for h in history)
+        return ""
 
     def __str__(self):
         # basic tfsa account details
-        represent = (f"\nTotal Limit: ${self.limit_total:,.2f}, Avl Limit: ${self.limit_avl:,.2f}, "
+        represent = "TFSA Account Details:"
+        represent += (f"\nTotal Limit: ${self.limit_total:,.2f}, Avl Limit: ${self.limit_avl:,.2f}, "
                       f"Balance: ${self.balance_cash:,.2f}, Avl Room: ${self.room_avl:,.2f}")
         # list of all contributions
         if self.contributions:
             represent += "\nContributions:\n"
-            represent += "\n".join(f"Date: {c['date']:}, Amount: ${c['amount']:,.2f}" for c in self.contributions)
+            represent += self.str_history("contribution")
         # list of all withdrawals
         if self.withdrawals:
             represent += "\nWithdrawals:\n"
-            represent += "\n".join(f"Date: {w['date']}, Amount: ${w['amount']:,.2f}" for w in self.withdrawals)
+            represent += self.str_history("withdrawal")
 
         return represent
 
 def main():
     acc = TFSA(2002)
+
+    try:
+        acc.contribute(Date.select_date(), 3000)
+        acc.contribute(Date.select_date(), 3000)
+        acc.contribute(Date.select_date(), 3000)
+        acc.contribute(Date.select_date(), 3000)
+        acc.contribute(Date.select_date(), 30000)
+    except OverLimit as e:
+        logger.exception(e)
+
+    try:
+        acc.withdraw(Date.select_date(), 2000)
+        acc.withdraw(Date.select_date(), 2000)
+        acc.withdraw(Date.select_date(), 2000)
+        acc.withdraw(Date.select_date(), 2000)
+        acc.withdraw(Date.select_date(), 20000)
+    except InsufficientBalance as e:
+        logger.exception(e)
+
     print(acc)
     print(acc.get_cont_room_by_year())
+
 
 if __name__ == '__main__':
     main()

@@ -43,15 +43,11 @@ class User:
     def initials(self) -> str:
         return f"{self.first[0]}{self.last[0]}"
 
-    @property
-    def year_eligible(self) -> int:
-        return max(self.year_of_birth + 18, 2009)
-
     # str of user object
     def __str__(self) -> str:
         represent = f"Details for {self.name_fl}:"
-        represent += str(self.tfsa)
-        represent += str(self.tfsa.portfolio)
+        represent += f"\n{str(self.tfsa)}"
+        represent += f"\n{str(self.portfolios[0])}"
 
         return represent
 
@@ -63,61 +59,52 @@ def main():
         joe_biden.tfsa.contribute(Date.gen_random_day(), 15000)
         joe_biden.tfsa.contribute(Date.gen_random_day(), 10000)
         # joe_biden.tfsa.contribute(Date.gen_random_day(), 10000)
-        # print("contributed 3 times")
     except OverLimit as e:
         logger.exception(e)
 
     try:
         pass
-        # joe_biden.tfsa.withdraw(Date.gen_random_day(), 10000)
-        # joe_biden.tfsa.withdraw(Date.gen_random_day(), 10000)
+        joe_biden.tfsa.withdraw(Date.gen_random_day(), 10000)
+        joe_biden.tfsa.withdraw(Date.gen_random_day(), 10000)
         # joe_biden.tfsa.withdraw(Date.gen_random_day(), 100000)
-        # print("withdrew 3 times")
     except InsufficientBalance as e:
         logger.exception(e)
+
+    joe_biden.portfolios.append(Portfolio("TFSA"))
 
     try:
         ticker = "gooGl".upper()
-        joe_biden.tfsa.buy(Date.gen_random_day(), ticker, 10, 160)
-        joe_biden.tfsa.buy(Date.gen_random_day(), "GOOGL", 20, 100)
+        day = Date.gen_random_day()
+        joe_biden.portfolios[0].buy(day, ticker, 10, 160)
+        day = Date.gen_random_day()
+        joe_biden.portfolios[0].buy(day, "GOOGL", 20, 100)
         ticker = "AapL".upper()
-        joe_biden.tfsa.buy(Date.gen_random_day(), ticker, 5, 100)
-        # joe_biden.tfsa.buy(SelectDate.gen_random_day(), "AAPL", 5, 100)
+        day = Date.gen_random_day()
+        joe_biden.portfolios[0].buy(day, ticker, 5, 100)
+        day = Date.gen_random_day()
+        joe_biden.portfolios[0].buy(day, "AAPL", 5, 100)
     except InsufficientBalance as e:
         logger.exception(e)
 
-    # print(f"\n{Stock.header_str()}")
-    # print(joe_biden.tfsa.portfolio.get_portfolio())
-    # print(joe_biden.tfsa.value_book_total)
-
     try:
-        joe_biden.tfsa.sell(Date.gen_random_day(), "GOOGL", 5, 160)
-        joe_biden.tfsa.sell(Date.gen_random_day(), "GOOGL", 5, 200)
+        joe_biden.portfolios[0].sell(Date.gen_random_day(), "GOOGL", 5, 160)
+        joe_biden.portfolios[0].sell(Date.gen_random_day(), "GOOGL", 5, 200)
     except InsufficientShares as e:
         logger.exception(e)
 
     try:
-        joe_biden.tfsa.buy(Date.gen_random_day(), "TEST", 4, 80)
-        joe_biden.tfsa.sell(Date.gen_random_day(), "TEST", 4, 60)
-        # joe_biden.tfsa.buy(Date.gen_random_day(), "TEST", 4, 100)
+        joe_biden.portfolios[0].buy(Date.gen_random_day(), "TEST", 4, 80)
+        joe_biden.portfolios[0].sell(Date.gen_random_day(), "TEST", 4, 60)
+        joe_biden.portfolios[0].buy(Date.gen_random_day(), "TEST", 4, 100)
     except InsufficientBalance as e:
         logger.exception(e)
 
     print(joe_biden)
 
-    vbt = joe_biden.tfsa.portfolio.value_book_total
-    vmt = joe_biden.tfsa.portfolio.value_mkt_total
+    vbt = joe_biden.portfolios[0].value_book_total
+    vmt = joe_biden.portfolios[0].value_mkt_total
     print(f"Total TFSA Book Value: ${vbt:.2f}")
     print(f"Total TFSA Market Value: ${vmt:.2f}")
-
-
-    # print(f"{joe_biden.year_eligible}, {joe_biden.initials}")
-
-    # print(f"\n{Stock.header_str()}")
-    # print(joe_biden.tfsa.portfolio.stocks["AAPL"])
-    # print(joe_biden.tfsa.portfolio.stocks["GOOGL"])
-
-
 
 
 

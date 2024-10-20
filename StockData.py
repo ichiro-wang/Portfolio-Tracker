@@ -15,8 +15,8 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
-cad_to_usd_rate = 0.72
-# cad_to_usd_rate = 0.5
+# cad_to_usd_rate = 0.72
+cad_to_usd_rate = 1
 
 def cad_to_usd(cad: float) -> float:
     return cad * cad_to_usd_rate
@@ -38,6 +38,7 @@ def get_data(ticker):
 
 def get_price(ticker) -> float:
 
+    # test values to prevent repeated api calls while developing
     # test_values = {"TEST":100}
     test_values = {"AAPL":235, "GOOGL":163.42, "TSLA":249.02, "VFV.TRT":136.60, "TEST":100}
     if ticker in test_values:

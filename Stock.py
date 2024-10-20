@@ -17,12 +17,15 @@ logger.addHandler(file_handler)
 
 class Stock:
 
-    def __init__(self, ticker: str, currency="", comment="") -> None:
+    def __init__(self, ticker: str) -> None:
         self.ticker: str = ticker.upper()  # ticker symbol
-        self.comment: str = comment  # save any comments
+        self.comment: str = ""  # save any comments
+        self.sector: str = "unspecified" # which sector the stock belongs to
         self.qty_open: float = 0  # how many shares currently owned
         self.qty_closed: float = 0  # how many shares sold
         self.value_book: float = 0  # how much the shares were bought for (sum)
+
+        # caching market price from api to prevent repeated api calls
         self.price_mkt_cached: dict[str, datetime | float] = {}
 
         # how many bought historically, how much that costed, and the avg price of the stock when bought
@@ -36,44 +39,44 @@ class Stock:
         logger.info(f"Created Stock {ticker}")
 
     @property
-    def price_avg_buy(self):
+    def price_avg_buy(self) -> float:
         if self.qty_total == 0:
             return 0
         return self.value_total / self.qty_total
 
     # save current market price to prevent repeated api calls
     # if the market price is not updated to today, then call api
-    def price_mkt_update(self):
+    def price_mkt_update(self) -> None:
         if not self.price_mkt_cached or not Date.within_last_hour(self.price_mkt_cached["date"]):
             logger.info("updating stock price")
             self.price_mkt_cached["date"] = datetime.now()
             self.price_mkt_cached["price"] = StockData.get_price(self.ticker)
 
     @property
-    def price_mkt(self):
+    def price_mkt(self) -> float:
         self.price_mkt_update()
         return self.price_mkt_cached["price"]
 
     @property
-    def value_mkt(self):
+    def value_mkt(self) -> float:
         return self.price_mkt * self.qty_open
 
     @property
-    def open_pl(self):
+    def open_pl(self) -> float:
         return self.value_mkt - self.value_book
 
     @property
-    def open_pl_percent(self):
+    def open_pl_percent(self) -> str:
         if self.value_book == 0:
             return "0.00%"
         return f"{self.open_pl / self.value_book * 100 :,.2f}%"
 
     @property
-    def close_pl(self):
+    def close_pl(self) -> float:
         return self.value_book_sell
 
     @property
-    def close_pl_percent(self):
+    def close_pl_percent(self) -> str:
         if self.value_book_sell == 0:
             return "0.00%"
         return f"{self.close_pl / (self.qty_closed * self.price_avg_buy) * 100 :,.2f}%"
@@ -85,22 +88,27 @@ class Stock:
         elif "." not in ticker:
             return "USD"
 
-    def adjust_stats(self, transaction: str, qty: float, price: float) -> None:
-        transaction = transaction.upper()
-        if transaction == "BUY":
+    # adjust attributes when performing a buy or sell
+    def adjust_stats(self, transaction_type: str, qty: float, price: float) -> None:
+        transaction_type = transaction_type.lower()
+        if transaction_type == "buy":
             self.qty_open += qty
             self.value_book += (qty * price)
             self.qty_total += qty
             self.value_total += (qty * price)
-        elif transaction == "SELL":
+        elif transaction_type == "sell":
             self.qty_open = self.qty_open - qty
             self.qty_closed += qty
             self.value_book -= (qty * self.price_avg_buy)
             self.value_book_sell += qty * (price - self.price_avg_buy)
             self.price_avg_sell = self.value_book_sell / self.qty_closed
 
+    # reset attributes after undoing a portfolio transaction
+    def reset_stats(self, transaction_type: str, history_elm: {}) -> None:
+        pass
+
     @staticmethod
-    def header_str():
+    def header_str() -> str:
         return (f"""{"Ticker":.<8}{"Open Qty":.<10}{"Closed Qty":.<12}{"Avg Price":.<14}{"Mkt Price":.<14}"""
                 f"""{"Book Value":.<16}{"Mkt Value":.<15}{"Open P&L":.<14}{"% Open P&L":.<14}"""
                 f"""{"Closed P&L":.<14}{"% Closed P&L":.<12}""")
@@ -112,17 +120,12 @@ class Stock:
 
         return string
 
-    # repr of stock object
     # def __repr__(self) -> str:
-    #     represent = (f"Details for {self.ticker}:\nOpen Qty: {self.qty_open}, Avg Price: ${self.price_avg_buy:,.2f}, "
-    #                  f"Book Value: ${self.value_book:,.2f}" if self.value_book >= 0
-    #                   else f"Book Value: -${-self.value_book:,.2f}")
-    #
-    #     return represent
+
 
 
 def main():
-    stock = Stock("TSLA", "elon musk")
+    stock = Stock("TSLA")
 
     print(Stock.header_str())
     print(stock)
