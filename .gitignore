@@ -1,0 +1,10 @@
+.env
+.venv
+__pycache__
+helloworld.txt
+
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
