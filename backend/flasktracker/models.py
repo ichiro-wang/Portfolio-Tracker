@@ -1,10 +1,16 @@
 from datetime import datetime
 from enum import Enum
-from backend.flasktracker import db
+from backend.flasktracker import db, bcrypt, login_manager
+from flask_login import UserMixin
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, user_id)
 
 
 # a user class that can contain several portfolios
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -37,11 +43,17 @@ class User(db.Model):
             "createdAt": self.created_at.isoformat(),
         }
 
-    def set_password(self, password):
-        self.password = password
+    @staticmethod
+    def set_password(password):
+        return bcrypt.generate_password_hash(password).decode("utf-8")
 
     def verify_password(self, password):
-        pass
+        return bcrypt.check_password_hash(self.password, password)
+
+    def __init__(self, name, email, password):
+        self.name = name
+        self.email = email
+        self.password = password
 
     def __repr__(self):
         return f"User('{self.name}', '{self.email}')"
