@@ -1,19 +1,14 @@
-import { useEffect, useState } from "react";
-import { apiTest } from "./services/apiTest";
+import {loginTest, logoutTest, getMeTest, signupTest} from "./services/apiAuth.ts";
 
 function App() {
-  const [data, setData] = useState<any>(null);
-  useEffect(() => {
-    const test = async () => {
-      const res = await apiTest();
-      setData(res);
-    };
-    test();
-  }, []);
-
-  console.log(data);
-
-  return <h1>test page</h1>;
+  return (
+      <>
+        <button onClick={() => signupTest()}>signup</button>
+        <button onClick={() => loginTest()}>login</button>
+        <button onClick={() => logoutTest()}>logout</button>
+        <button onClick={() => getMeTest()}>get me</button>
+      </>
+  )
 }
 
 export default App;

@@ -38,7 +38,6 @@ class User(db.Model, UserMixin):
             "id": self.id,
             "name": self.name,
             "email": self.email,
-            "password": self.password,
             "portfolios": [portfolio.to_json() for portfolio in self.portfolios],
             "createdAt": self.created_at.isoformat(),
         }
@@ -47,7 +46,7 @@ class User(db.Model, UserMixin):
     def set_password(password):
         return bcrypt.generate_password_hash(password).decode("utf-8")
 
-    def verify_password(self, password):
+    def validate_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
 
     def __init__(self, name, email, password):

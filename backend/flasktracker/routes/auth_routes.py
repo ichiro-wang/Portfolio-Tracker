@@ -43,6 +43,9 @@ def signup():
         db.session.add(new_user)
         db.session.commit()
 
+        # login_user from flask login package
+        login_user(new_user)
+
         return jsonify(new_user.to_json()), 201
     except Exception as e:
         # rollback any changes if error
@@ -78,7 +81,8 @@ def logout():
     return jsonify({"message": "Logged out"}), 200
 
 @auth.route("/me", methods=["GET"])
-def me():
+def get_me():
+    # current_user from flask login package
     if current_user.is_authenticated:
         return jsonify(current_user.to_json()), 200
     return jsonify({"error": "Not logged in"}), 401

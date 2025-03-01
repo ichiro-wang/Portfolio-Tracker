@@ -1,11 +1,16 @@
-.env
-.venv
-__pycache__
-helloworld.txt
-requests.rest
-
+**/.env
+**/.venv
+**/__pycache__
+**/helloworld.txt
+**/requests.rest
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
