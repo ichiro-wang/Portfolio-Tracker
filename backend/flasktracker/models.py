@@ -1,7 +1,11 @@
 from datetime import datetime
 from enum import Enum
-from backend.flasktracker import db, bcrypt, login_manager
-from flask_login import UserMixin
+from flasktracker import db, bcrypt, login_manager
+from flask_login import UserMixin  # type: ignore
+from dotenv import load_dotenv  # type: ignore
+import os
+
+load_dotenv()
 
 
 @login_manager.user_loader
@@ -20,7 +24,7 @@ class User(db.Model, UserMixin):
     profile_pic = db.Column(
         db.String(255),
         nullable=False,
-        default="https://cdn.nba.com/headshots/nba/latest/1040x760/2544.png",
+        default=os.getenv("DEFAULT_PICTURE"),
     )
 
     portfolios = db.relationship(
@@ -38,12 +42,13 @@ class User(db.Model, UserMixin):
             "id": self.id,
             "name": self.name,
             "email": self.email,
-            "portfolios": [portfolio.to_json() for portfolio in self.portfolios],
+            "profilePic": self.profile_pic,
+            # "portfolios": [portfolio.to_json() for portfolio in self.portfolios],
             "createdAt": self.created_at.isoformat(),
         }
 
     @staticmethod
-    def set_password(password):
+    def hash_password(password):
         return bcrypt.generate_password_hash(password).decode("utf-8")
 
     def validate_password(self, password):
@@ -82,7 +87,7 @@ class Portfolio(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "stocks": [stock.to_json() for stock in self.stocks],
+            # "stocks": [stock.to_json() for stock in self.stocks],
             "createdAt": self.created_at.isoformat(),
         }
 
@@ -149,9 +154,7 @@ class Stock(db.Model):
             "id": self.id,
             "ticker": self.ticker,
             "wrapper": self.wrapper.to_json() if self.wrapper else None,
-            "transactions": [
-                transaction.to_json() for transaction in self.transactions
-            ],
+            # "transactions": [transaction.to_json() for transaction in self.transactions],
             "createdAt": self.created_at.isoformat(),
         }
 
