@@ -8,9 +8,20 @@ interface Props {
   children: ReactNode;
 }
 
-const Button = ({ className, disabled, type="button", onClick, children }: Props) => {
+const Button = ({
+  className,
+  disabled,
+  type = "button",
+  onClick,
+  children,
+}: Props) => {
   return (
-    <button type={type} disabled={disabled} onClick={onClick} className={className}>
+    <button
+      type={type}
+      disabled={disabled}
+      onClick={onClick}
+      className={`flex items-center justify-center rounded-full bg-black px-3 py-1 text-white hover:bg-zinc-700 ${className}`}
+    >
       {children}
     </button>
   );

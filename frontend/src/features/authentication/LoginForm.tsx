@@ -1,9 +1,12 @@
-import { useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import { useLogin } from "./useLogin";
-import "react-hook-form";
 import { SignupLoginArgs } from "../../services/apiAuth";
-import toast from "react-hot-toast";
 import Button from "../../components/Button";
+import AuthForm from "./AuthForm";
+import AuthFormRow from "./AuthFormRow";
+import AuthFormInput from "./AuthFormInput";
+import ButtonLink from "../../components/ButtonLink";
+import AuthFormButtonBox from "./AuthFormButtonBox";
 
 const LoginForm = () => {
   const { login, isLoading } = useLogin();
@@ -15,45 +18,47 @@ const LoginForm = () => {
   } = useForm<SignupLoginArgs>();
 
   const onSubmit = ({ email, password }: SignupLoginArgs) => {
-    if (!email || !password) {
-      return;
-    }
     login({ email, password }, { onSettled: () => reset() });
   };
 
-  const onError = (error: unknown) => {
-    toast.error(error as string);
+  const onError = (errors: FieldErrors<SignupLoginArgs>) => {
+    Object.values(errors).map((error) => {
+      console.error(error?.message || "Error in log in");
+    });
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit, onError)}>
-      <p>Log in to Portfolio Tracker</p>
-      <div>
-        <input
-          className="border"
+    <AuthForm
+      onSubmit={handleSubmit(onSubmit, onError)}
+      title="Log in to Portfolio Tracker"
+    >
+      <AuthFormRow error={formErrors?.email?.message}>
+        <AuthFormInput
           type="text"
           id="email"
+          label="Email"
           disabled={isLoading}
           {...register("email", { required: "Email is required" })}
         />
-        {formErrors.email ? <span>{formErrors.email.message}</span> : null}
-      </div>
+      </AuthFormRow>
 
-      <div>
-        <input
-          className="border"
-          type="text"
+      <AuthFormRow error={formErrors?.password?.message}>
+        <AuthFormInput
+          type="password"
           id="password"
+          label="Pasword"
           disabled={isLoading}
           {...register("password", { required: "Password is required" })}
         />
-        {formErrors.password ? <span>{formErrors.password.message}</span> : null}
-      </div>
+      </AuthFormRow>
 
-      <Button type="submit" disabled={isLoading}>
-        Login
-      </Button>
-    </form>
+      <AuthFormButtonBox>
+        <Button type="submit" disabled={isLoading}>
+          Login
+        </Button>
+        <ButtonLink to="/signup">Create an account</ButtonLink>
+      </AuthFormButtonBox>
+    </AuthForm>
   );
 };
 

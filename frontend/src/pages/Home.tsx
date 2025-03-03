@@ -1,15 +1,12 @@
 import { Navigate } from "react-router-dom";
-import Button from "../components/Button";
 import Loader from "../components/Loader";
 import { useAuthContext } from "../contexts/AuthContext";
-import { useLogout } from "../features/authentication/useLogout";
 import { formatCurrency } from "../utils/formatCurrency";
 
 const Home = () => {
-  const { user, isLoading: isLoadingUser } = useAuthContext();
-  const { logout, isLoading: isLoadingLogout } = useLogout();
+  const { user, isLoading } = useAuthContext();
 
-  if (isLoadingUser) {
+  if (isLoading) {
     return <Loader />;
   }
 
@@ -20,12 +17,13 @@ const Home = () => {
   return (
     <div>
       <h1>Welcome {user?.name}</h1>
-      {user.bookValue && <p>Book Value: {formatCurrency(user.bookValue)}</p>}
-      {user.marketValue && <p>Market Value: {formatCurrency(user.marketValue)}</p>}
+      {user.bookValue != null && (
+        <p>Book Value: {formatCurrency(user.bookValue)}</p>
+      )}
+      {user.marketValue != null && (
+        <p>Market Value: {formatCurrency(user.marketValue)}</p>
+      )}
       <img src={user?.profilePic} alt="Profile Picture" />
-      <Button disabled={isLoadingLogout} onClick={logout}>
-        Logout
-      </Button>
     </div>
   );
 };

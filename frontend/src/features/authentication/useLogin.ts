@@ -13,7 +13,8 @@ export const useLogin = () => {
     isPending: isLoading,
     error,
   } = useMutation({
-    mutationFn: ({ email, password }: SignupLoginArgs) => loginApi({ email, password }),
+    mutationFn: ({ email, password }: SignupLoginArgs) =>
+      loginApi({ email, password }),
     onSuccess: (user) => {
       queryClient.setQueryData(["user"], user);
       navigate("/home");

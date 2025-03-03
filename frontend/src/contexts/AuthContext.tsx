@@ -18,7 +18,11 @@ interface ProviderProps {
 const AuthContextProvider = ({ children }: ProviderProps) => {
   const { user, isLoading } = useUser();
 
-  return <AuthContext.Provider value={{ user, isLoading }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, isLoading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuthContext = () => {

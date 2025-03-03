@@ -1,22 +1,17 @@
-import { memo } from "react";
-import { useLogout } from "../features/authentication/useLogout";
-import Button from "./Button";
 import ButtonLink from "./ButtonLink";
+import ButtonLogout from "./ButtonLogout";
+import LogoSmall from "./LogoSmall";
 
-const Navbar = memo(function Navbar() {
-  const { logout, isLoading } = useLogout();
-
+const Navbar = () => {
   return (
-    <nav className="my-5 mx-3 flex items-center gap-2">
-      <img src="logo-small.png" alt="Logo" width={60} />
+    <nav className="mx-3 my-5 flex items-center gap-2">
+      <LogoSmall className="mr-2" />
       <ButtonLink to="/home">Home</ButtonLink>
       <ButtonLink to="/portfolios">Portfolios</ButtonLink>
       <ButtonLink to="/settings">Settings</ButtonLink>
-      <Button disabled={isLoading} onClick={logout}>
-        Logout
-      </Button>
+      <ButtonLogout />
     </nav>
   );
-});
+};
 
 export default Navbar;

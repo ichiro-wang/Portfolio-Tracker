@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const RoundedImage = () => {
-  return (
-    <div>RoundedImage</div>
-  )
-}
+  return <div>RoundedImage</div>;
+};
 
-export default RoundedImage
+export default RoundedImage;

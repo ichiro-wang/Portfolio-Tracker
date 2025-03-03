@@ -6,7 +6,11 @@ export interface SignupLoginArgs {
   password: string;
 }
 
-export const signup = async ({ name, email, password }: SignupLoginArgs): Promise<UserType> => {
+export const signup = async ({
+  name,
+  email,
+  password,
+}: SignupLoginArgs): Promise<UserType> => {
   const res = await axios.post("/api/auth/signup", { name, email, password });
 
   if (res.data.error) {
@@ -16,7 +20,10 @@ export const signup = async ({ name, email, password }: SignupLoginArgs): Promis
   return res.data;
 };
 
-export const login = async ({ email, password }: SignupLoginArgs): Promise<UserType> => {
+export const login = async ({
+  email,
+  password,
+}: SignupLoginArgs): Promise<UserType> => {
   const res = await axios.post("/api/auth/login", { email, password });
   return res.data;
 };

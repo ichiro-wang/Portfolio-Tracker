@@ -9,6 +9,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import NoPageFound from "./components/NoPageFound";
 import Portfolios from "./pages/Portfolios";
+import Settings from "./pages/Settings";
+import Signup from "./pages/Signup";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,8 +37,9 @@ function App() {
               <Route index element={<Navigate replace to="/home" />} />
               <Route path="/home" element={<Home />} />
               <Route path="/portfolios" element={<Portfolios />} />
+              <Route path="/settings" element={<Settings />} />
             </Route>
-            <Route path="/signup" element={<h1 className="text-red-500">signup</h1>} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<NoPageFound />} />
           </Routes>
@@ -49,7 +52,7 @@ function App() {
             success: { duration: 3000 },
             error: { duration: 5000 },
             style: {
-              fontSize: "2.5rem",
+              fontSize: "1.3rem",
               maxWidth: "500px",
               padding: "16px 24px",
               backgroundColor: "white",

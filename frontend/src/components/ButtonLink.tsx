@@ -9,7 +9,10 @@ interface Props {
 
 const ButtonLink = ({ className, to, children }: Props) => {
   return (
-    <Link className={className} to={to}>
+    <Link
+      className={`flex items-center justify-center underline underline-offset-4 hover:no-underline ${className}`}
+      to={to}
+    >
       {children}
     </Link>
   );
