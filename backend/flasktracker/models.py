@@ -3,8 +3,8 @@ from enum import Enum
 from flasktracker import db, bcrypt, login_manager
 from flasktracker.utils.get_stock_details import get_stock_details
 from sqlalchemy.orm import Mapped
-from flask_login import UserMixin  # type: ignore
-from dotenv import load_dotenv  # type: ignore
+from flask_login import UserMixin
+from dotenv import load_dotenv
 import os
 
 load_dotenv()
@@ -134,12 +134,12 @@ class StockWrapper(db.Model):
     def _update_cache(self):
         if not self.updated_at or self.updated_at < datetime.now() - timedelta(hours=8):
             data = get_stock_details(self.ticker)
-            if data["error"]:
+            if data.get("error"):
                 self.market_cache = 0.0
             else:
-                self.market_cache = data["price"]
+                self.market_cache = data.get("price")
                 self.updated_at = datetime.now()
-                db.session.commit()
+            db.session.commit()
 
     @property
     def market_price(self) -> float:
@@ -159,7 +159,7 @@ class StockWrapper(db.Model):
         }
 
     def __repr__(self):
-        return f"StockWrapper('{self.ticker}', '{self.marketCache}')"
+        return f"StockWrapper('{self.ticker}', '{self.market_cache}')"
 
 
 # These are the stocks within a portfolio

@@ -4,13 +4,13 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 
-from dotenv import load_dotenv  # type: ignore
+from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
-import firebase_admin  # type: ignore
-from firebase_admin import credentials  # type: ignore
+import firebase_admin
+from firebase_admin import credentials
 
 from flasktracker.config import Config
 

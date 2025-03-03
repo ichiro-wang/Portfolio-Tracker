@@ -2,7 +2,7 @@ type UserType = {
   id: string;
   name: string;
   email: string;
-  profilepic: string;
+  profilePic: string;
   bookValue: number?;
   marketValue: number?;
 };

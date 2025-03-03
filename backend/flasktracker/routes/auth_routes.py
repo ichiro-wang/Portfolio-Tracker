@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_login import login_user, logout_user, current_user, login_required  # type: ignore
+from flask_login import login_user, logout_user, current_user, login_required
 
 from flasktracker.models import User
 from flasktracker import db, login_manager
@@ -85,6 +85,5 @@ def logout():
 @auth.route("/me", methods=["GET"])
 @login_required
 def get_me():
-    print("get me")
     # current_user from flask login package
-    return jsonify(current_user.to_json()), 200
+    return jsonify(current_user.to_json(include_properties=True)), 200

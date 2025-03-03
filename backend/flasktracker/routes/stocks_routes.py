@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_login import current_user, login_required  # type: ignore
+from flask_login import current_user, login_required
 
 from flasktracker.models import User, Portfolio, Stock, Transaction
 from flasktracker import db

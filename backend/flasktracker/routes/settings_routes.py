@@ -1,14 +1,14 @@
 from flask import Blueprint, request, jsonify
-from flask_login import current_user, login_required  # type: ignore
+from flask_login import current_user, login_required
 from flasktracker.models import User
 from flasktracker import db
 from flasktracker.utils.handle_image import handle_image
-from dotenv import load_dotenv  # type: ignore
+from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
-from firebase_admin import storage  # type: ignore
+from firebase_admin import storage
 
 settings = Blueprint("settings", __name__, url_prefix="/api/settings")
 current_user: User = current_user
