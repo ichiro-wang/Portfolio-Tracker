@@ -85,5 +85,6 @@ def logout():
 @auth.route("/me", methods=["GET"])
 @login_required
 def get_me():
+    print("get me")
     # current_user from flask login package
     return jsonify(current_user.to_json()), 200

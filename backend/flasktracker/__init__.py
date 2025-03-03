@@ -1,8 +1,8 @@
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS  # type: ignore
-from flask_bcrypt import Bcrypt  # type: ignore
-from flask_login import LoginManager  # type: ignore
+from flask_cors import CORS
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
 
 from dotenv import load_dotenv  # type: ignore
 import os
@@ -48,9 +48,15 @@ def create_app(config_class=Config):
     )
 
     from flasktracker.routes.auth_routes import auth
+    from flasktracker.routes.portfolios_routes import portfolios
+    from flasktracker.routes.stocks_routes import stocks
+    from flasktracker.routes.transactions_routes import transactions
     from flasktracker.routes.settings_routes import settings
 
     app.register_blueprint(auth)
+    app.register_blueprint(portfolios)
+    app.register_blueprint(stocks)
+    app.register_blueprint(transactions)
     app.register_blueprint(settings)
 
     return app

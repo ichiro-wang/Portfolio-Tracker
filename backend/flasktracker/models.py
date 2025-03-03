@@ -1,6 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 from flasktracker import db, bcrypt, login_manager
+from flasktracker.utils.get_stock_details import get_stock_details
+from sqlalchemy.orm import Mapped
 from flask_login import UserMixin  # type: ignore
 from dotenv import load_dotenv  # type: ignore
 import os
@@ -17,17 +19,17 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
-    profile_pic = db.Column(
+    id: Mapped[int] = db.Column(db.Integer, primary_key=True)
+    name: Mapped[str] = db.Column(db.String(255), nullable=False)
+    email: Mapped[str] = db.Column(db.String(255), unique=True, nullable=False)
+    password: Mapped[str] = db.Column(db.String(255), nullable=False)
+    profile_pic: Mapped[str] = db.Column(
         db.String(255),
         nullable=False,
         default=os.getenv("DEFAULT_PICTURE"),
     )
 
-    portfolios = db.relationship(
+    portfolios: Mapped[list["Portfolio"]] = db.relationship(
         "Portfolio",
         back_populates="owner",
         lazy=True,
@@ -35,23 +37,35 @@ class User(db.Model, UserMixin):
         order_by="Portfolio.created_at",
     )
 
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
+    @property
+    def book_value(self):
+        return sum(p.book_value for p in self.portfolios)
 
-    def to_json(self):
-        return {
+    @property
+    def market_value(self):
+        return sum(p.market_value for p in self.portfolios)
+
+    created_at: Mapped[datetime] = db.Column(
+        db.DateTime, nullable=False, default=datetime.now
+    )
+
+    def to_json(self, include_properties=False) -> dict:
+        res = {
             "id": self.id,
             "name": self.name,
             "email": self.email,
             "profilePic": self.profile_pic,
-            # "portfolios": [portfolio.to_json() for portfolio in self.portfolios],
             "createdAt": self.created_at.isoformat(),
         }
+        if include_properties:
+            res.update({"bookValue": self.book_value, "marketValue": self.market_value})
+        return res
 
     @staticmethod
-    def hash_password(password):
+    def hash_password(password: str) -> str:
         return bcrypt.generate_password_hash(password).decode("utf-8")
 
-    def validate_password(self, password):
+    def validate_password(self, password: str) -> bool:
         return bcrypt.check_password_hash(self.password, password)
 
     def __init__(self, name, email, password):
@@ -67,13 +81,13 @@ class User(db.Model, UserMixin):
 class Portfolio(db.Model):
     __tablename__ = "portfolios"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
+    id: Mapped[int] = db.Column(db.Integer, primary_key=True)
+    name: Mapped[str] = db.Column(db.String(255), nullable=False)
 
-    owner_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    owner = db.relationship("User", back_populates="portfolios")
+    owner_id: Mapped[int] = db.Column(db.Integer, db.ForeignKey("users.id"))
+    owner: Mapped["User"] = db.relationship("User", back_populates="portfolios")
 
-    stocks = db.relationship(
+    stocks: Mapped[list["Stock"]] = db.relationship(
         "Stock",
         back_populates="portfolio",
         lazy=True,
@@ -81,15 +95,27 @@ class Portfolio(db.Model):
         order_by="Stock.created_at",
     )
 
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
+    @property
+    def book_value(self):
+        return sum(s.book_value for s in self.stocks)
 
-    def to_json(self):
-        return {
+    @property
+    def market_value(self):
+        return sum(s.market_value for s in self.stocks)
+
+    created_at: Mapped[datetime] = db.Column(
+        db.DateTime, nullable=False, default=datetime.now
+    )
+
+    def to_json(self, include_properties=False):
+        res = {
             "id": self.id,
             "name": self.name,
-            # "stocks": [stock.to_json() for stock in self.stocks],
             "createdAt": self.created_at.isoformat(),
         }
+        if include_properties:
+            res.update({"bookValue": self.book_value, "marketValue": self.market_value})
+        return res
 
     def __repr__(self):
         return f"Portfolio('{self.name}')"
@@ -99,13 +125,28 @@ class Portfolio(db.Model):
 class StockWrapper(db.Model):
     __tablename__ = "stock_wrappers"
 
-    id = db.Column(db.Integer, primary_key=True)
-    ticker = db.Column(db.String(255), nullable=False)
-    market_cache = db.Column(db.Float)
+    id: Mapped[int] = db.Column(db.Integer, primary_key=True)
+    ticker: Mapped[str] = db.Column(db.String(255), nullable=False)
+    market_cache: Mapped[float] = db.Column(db.Float)
 
-    updated_at = db.Column(db.DateTime)
+    updated_at: Mapped[datetime] = db.Column(db.DateTime)
 
-    stocks = db.relationship(
+    def _update_cache(self):
+        if not self.updated_at or self.updated_at < datetime.now() - timedelta(hours=8):
+            data = get_stock_details(self.ticker)
+            if data["error"]:
+                self.market_cache = 0.0
+            else:
+                self.market_cache = data["price"]
+                self.updated_at = datetime.now()
+                db.session.commit()
+
+    @property
+    def market_price(self) -> float:
+        self._update_cache()
+        return self.market_cache
+
+    stocks: Mapped[list["Stock"]] = db.relationship(
         "Stock", back_populates="wrapper", lazy=True, cascade="all, delete-orphan"
     )
 
@@ -113,9 +154,8 @@ class StockWrapper(db.Model):
         return {
             "id": self.id,
             "ticker": self.ticker,
-            "marketCache": self.market_cache if self.market_cache else None,
+            "marketPrice": self.market_cache if self.market_cache else None,
             "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
-            # "stocks": [stock.to_json() for stock in self.stocks],
         }
 
     def __repr__(self):
@@ -128,18 +168,24 @@ class StockWrapper(db.Model):
 class Stock(db.Model):
     __tablename__ = "stocks"
 
-    id = db.Column(db.Integer, primary_key=True)
-    ticker = db.Column(db.String(255), nullable=False)
+    id: Mapped[int] = db.Column(db.Integer, primary_key=True)
+    ticker: Mapped[str] = db.Column(db.String(255), nullable=False)
 
-    portfolio_id = db.Column(db.Integer, db.ForeignKey("portfolios.id"), nullable=False)
-    portfolio = db.relationship("Portfolio", back_populates="stocks")
+    portfolio_id: Mapped[int] = db.Column(
+        db.Integer, db.ForeignKey("portfolios.id"), nullable=False
+    )
+    portfolio: Mapped[list["Portfolio"]] = db.relationship(
+        "Portfolio", back_populates="stocks"
+    )
 
-    wrapper_id = db.Column(
+    wrapper_id: Mapped[int] = db.Column(
         db.Integer, db.ForeignKey("stock_wrappers.id"), nullable=False
     )
-    wrapper = db.relationship("StockWrapper", back_populates="stocks")
+    wrapper: Mapped["StockWrapper"] = db.relationship(
+        "StockWrapper", back_populates="stocks"
+    )
 
-    transactions = db.relationship(
+    transactions: Mapped[list["Transaction"]] = db.relationship(
         "Transaction",
         back_populates="stock",
         lazy=True,
@@ -147,16 +193,79 @@ class Stock(db.Model):
         order_by="Transaction.date",
     )
 
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
+    @property
+    def total_quantity(self):
+        return sum(
+            t.quantity for t in self.transactions if t.type == TransactionType.BUY
+        )
 
-    def to_json(self):
-        return {
+    @property
+    def close_quantity(self):
+        return sum(
+            t.quantity for t in self.transactions if t.type == TransactionType.SELL
+        )
+
+    @property
+    def open_quantity(self):
+        return self.total_quantity - self.close_quantity
+
+    @property
+    def average_price(self):
+        return (
+            sum(
+                (t.quantity * t.price)
+                for t in self.transactions
+                if t.type == TransactionType.BUY
+            )
+            / self.total_quantity
+            if self.total_quantity > 0
+            else 0
+        )
+
+    @property
+    def market_price(self):
+        return self.wrapper.market_price
+
+    @property
+    def book_value(self):
+        total = 0.0
+        for t in self.transactions:
+            transaction_cost = t.quantity * t.price
+            total = (
+                total + transaction_cost
+                if t.type == TransactionType.BUY
+                else total - transaction_cost
+            )
+        return total
+
+    @property
+    def market_value(self):
+        return self.market_price * self.open_quantity
+
+    created_at: Mapped[datetime] = db.Column(
+        db.DateTime, nullable=False, default=datetime.now
+    )
+
+    def to_json(self, include_properties=False):
+        res = {
             "id": self.id,
             "ticker": self.ticker,
             "wrapper": self.wrapper.to_json() if self.wrapper else None,
-            # "transactions": [transaction.to_json() for transaction in self.transactions],
             "createdAt": self.created_at.isoformat(),
         }
+        if include_properties:
+            res.update(
+                {
+                    "totalQuantity": self.total_quantity,
+                    "closeQuantity": self.close_quantity,
+                    "openQuantity": self.open_quantity,
+                    "averagePrice": self.average_price,
+                    "marketPrice": self.market_price,
+                    "bookValue": self.book_value,
+                    "marketValue": self.market_value,
+                }
+            )
+        return res
 
     def __repr__(self):
         return f"Stock('{self.ticker}')"
@@ -170,20 +279,26 @@ class TransactionType(Enum):
 class Transaction(db.Model):
     __tablename__ = "transactions"
 
-    id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.Enum(TransactionType), nullable=False)
-    date = db.Column(db.DateTime, nullable=False, default=datetime.now)
-    quantity = db.Column(db.Float, nullable=False, default=0)
-    price = db.Column(db.Float, nullable=False, default=0)
-    fees = db.Column(db.Float, nullable=False, default=0)
+    id: Mapped[int] = db.Column(db.Integer, primary_key=True)
+    type: Mapped["TransactionType"] = db.Column(
+        db.Enum(TransactionType), nullable=False
+    )
+    date: Mapped[datetime] = db.Column(
+        db.DateTime, nullable=False, default=datetime.now
+    )
+    quantity: Mapped[float] = db.Column(db.Float, nullable=False, default=0)
+    price: Mapped[float] = db.Column(db.Float, nullable=False, default=0)
+    fees: Mapped[float] = db.Column(db.Float, nullable=False, default=0)
 
-    stock_id = db.Column(db.Integer, db.ForeignKey("stocks.id"), nullable=False)
-    stock = db.relationship("Stock", back_populates="transactions")
+    stock_id: Mapped[int] = db.Column(
+        db.Integer, db.ForeignKey("stocks.id"), nullable=False
+    )
+    stock: Mapped["Stock"] = db.relationship("Stock", back_populates="transactions")
 
     def to_json(self):
         return {
             "id": self.id,
-            "type": self.type,
+            "type": self.type.value,
             "date": self.date.isoformat(),
             "quantity": self.quantity,
             "price": self.price,

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import current_user, login_required  # type: ignore
 
-from flasktracker.models import User, Portfolio
+from flasktracker.models import User, Portfolio, Stock
 from flasktracker import db
 
 portfolios = Blueprint("portfolios", __name__, url_prefix="/api/portfolios")
@@ -13,7 +13,16 @@ current_user: User = current_user
 def get_all_portfolios():
     try:
         ports_json = [port.to_json() for port in current_user.portfolios]
-        return jsonify(ports_json), 200
+        return (
+            jsonify(
+                {
+                    "portfolios": ports_json,
+                    "bookValue": current_user.book_value,
+                    "marketValue": current_user.market_value,
+                }
+            ),
+            200,
+        )
     except Exception as e:
         return jsonify({"error": str(e)})
 
@@ -43,11 +52,22 @@ def create_portfolio():
 def get_portfolio(id: int):
     try:
         portfolio: Portfolio = db.session.get(Portfolio, id)
-
         if not portfolio:
             return jsonify({"error": f"Portfolio with id {id} could not be found"}), 404
+        if portfolio.owner_id != current_user.id:
+            return jsonify({"error": "Invalid request"}), 400
 
-        return jsonify(portfolio.to_json()), 200
+        stocks_json = [s.to_json(include_properties=True) for s in portfolio.stocks]
+
+        return (
+            jsonify(
+                {
+                    "portfolio": portfolio.to_json(include_properties=True),
+                    "stocks": stocks_json,
+                }
+            ),
+            200,
+        )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -57,9 +77,10 @@ def get_portfolio(id: int):
 def delete_portfolio(id: int):
     try:
         port_to_delete = db.session.get(Portfolio, id)
-
         if not port_to_delete:
             return jsonify({"error": f"Portfolio with id {id} could not be found"}), 404
+        if port_to_delete.owner_id != current_user.id:
+            return jsonify({"error": "Invalid request"}), 400
 
         db.session.delete(port_to_delete)
         db.session.commit()
