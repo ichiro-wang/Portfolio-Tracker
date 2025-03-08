@@ -20,7 +20,7 @@ const Button = ({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={`flex items-center justify-center rounded-full bg-black px-3 py-1 text-white hover:bg-zinc-700 ${className}`}
+      className={`h-10 min-w-20 flex items-center justify-center rounded-full bg-black px-3 py-1 text-white hover:bg-zinc-700 ${className}`}
     >
       {children}
     </button>

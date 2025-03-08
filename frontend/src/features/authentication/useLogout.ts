@@ -16,8 +16,9 @@ export const useLogout = () => {
   } = useMutation({
     mutationFn: () => logoutApi(),
     onSuccess: () => {
-      queryClient.removeQueries();
-      navigate("/login");
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.clear();
+      navigate("/login", { replace: true });
     },
     onError: () => {
       toast.error("Error with logout");

@@ -7,6 +7,7 @@ import AuthFormRow from "./AuthFormRow";
 import AuthFormInput from "./AuthFormInput";
 import ButtonLink from "../../components/ButtonLink";
 import AuthFormButtonBox from "./AuthFormButtonBox";
+import Spinner from "../../components/Spinner";
 
 const LoginForm = () => {
   const { login, isLoading } = useLogin();
@@ -54,7 +55,7 @@ const LoginForm = () => {
 
       <AuthFormButtonBox>
         <Button type="submit" disabled={isLoading}>
-          Login
+          {isLoading ? <Spinner /> : "Login"}
         </Button>
         <ButtonLink to="/signup">Create an account</ButtonLink>
       </AuthFormButtonBox>

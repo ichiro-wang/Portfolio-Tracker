@@ -6,11 +6,13 @@ export const useUser = () => {
     data: user,
     isLoading,
     error,
+    refetch,
   } = useQuery({
     queryKey: ["user"],
     queryFn: getMe,
-    retry: false,
+    retry: 1,
+    staleTime: 0,
   });
 
-  return { user, isLoading, error };
+  return { user, isLoading, error, refetch };
 };

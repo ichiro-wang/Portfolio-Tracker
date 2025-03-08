@@ -13,16 +13,22 @@ const ProtectedRoute = ({ children }: Props) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user && !isLoading) navigate("/login", { replace: true });
+    if (!user && !isLoading) {
+      navigate("/login", { replace: true });
+    }
   }, [user, isLoading, navigate]);
 
+  console.log("user", user);
+
   if (isLoading) {
+    console.log("loading", isLoading);
     return (
       <FullPage>
         <Loader />
       </FullPage>
     );
   }
+  
 
   return children;
 };

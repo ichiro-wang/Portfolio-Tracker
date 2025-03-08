@@ -7,6 +7,7 @@ import AuthFormInput from "./AuthFormInput";
 import Button from "../../components/Button";
 import ButtonLink from "../../components/ButtonLink";
 import AuthFormButtonBox from "./AuthFormButtonBox";
+import Spinner from "../../components/Spinner";
 
 interface SignupWithConfirm extends SignupLoginArgs {
   confirmPassword: string;
@@ -96,7 +97,7 @@ const SignupForm = () => {
 
       <AuthFormButtonBox>
         <Button type="submit" disabled={isLoading}>
-          Sign up
+          {isLoading ? <Spinner /> : "Sign up"}
         </Button>
         <ButtonLink to="/login">Log in</ButtonLink>
       </AuthFormButtonBox>
