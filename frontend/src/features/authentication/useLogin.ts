@@ -1,11 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
-import { login as loginApi, SignupLoginArgs } from "../../services/apiAuth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { login as loginApi, LoginArgs } from "../../services/apiAuth";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 export const useLogin = () => {
   const navigate = useNavigate();
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const {
     mutate: login,
@@ -13,11 +13,10 @@ export const useLogin = () => {
     isPending: isLoading,
     error,
   } = useMutation({
-    mutationFn: ({ email, password }: SignupLoginArgs) =>
+    mutationFn: ({ email, password }: LoginArgs) =>
       loginApi({ email, password }),
-    onSuccess: () => {
-      // queryClient.invalidateQueries({ queryKey: ["user"] });
-      // queryClient.setQueryData(["user"], user);
+    onSuccess: (user) => {
+      queryClient.setQueryData(["user"], user);
       navigate("/home");
     },
     onError: () => {

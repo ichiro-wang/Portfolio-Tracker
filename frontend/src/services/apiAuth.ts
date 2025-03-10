@@ -1,7 +1,7 @@
 import axios from "axios";
 
-export interface SignupLoginArgs {
-  name?: string;
+export interface SignupArgs {
+  name: string;
   email: string;
   password: string;
 }
@@ -10,7 +10,7 @@ export const signup = async ({
   name,
   email,
   password,
-}: SignupLoginArgs): Promise<UserType> => {
+}: SignupArgs): Promise<UserType> => {
   const res = await axios.post("/api/auth/signup", { name, email, password });
 
   if (res.data.error) {
@@ -20,11 +20,21 @@ export const signup = async ({
   return res.data;
 };
 
+export interface LoginArgs {
+  email: string;
+  password: string;
+}
+
 export const login = async ({
   email,
   password,
-}: SignupLoginArgs): Promise<UserType> => {
+}: LoginArgs): Promise<UserType> => {
   const res = await axios.post("/api/auth/login", { email, password });
+
+  if (res.data.error) {
+    throw new Error(res.data.error);
+  }
+
   return res.data;
 };
 

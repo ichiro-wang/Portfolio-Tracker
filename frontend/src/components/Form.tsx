@@ -6,13 +6,13 @@ interface Props {
   children: ReactNode;
 }
 
-const AuthForm = ({ onSubmit, title, children }: Props) => {
+const Form = ({ onSubmit, title, children }: Props) => {
   return (
-    <form onSubmit={onSubmit} className="rounded-md border p-6">
+    <form onSubmit={onSubmit}>
       {title && <h1 className="mb-4 text-2xl font-semibold">{title}</h1>}
       {children}
     </form>
   );
 };
 
-export default AuthForm;
+export default Form;

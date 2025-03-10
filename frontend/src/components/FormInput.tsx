@@ -3,14 +3,16 @@ interface Props {
   type: string;
   id: string;
   label: string;
+  defaultValue?: string;
   disabled: boolean;
 }
 
-const AuthFormInput = ({
+const FormInput = ({
   className,
   type,
   id,
   label,
+  defaultValue = "",
   disabled,
   ...rest
 }: Props) => {
@@ -18,9 +20,10 @@ const AuthFormInput = ({
     <div className="mt-2">
       <label htmlFor={id}>{label}</label>
       <input
-        className={`w-full border border-neutral-600 ${className}`}
+        className={`w-full rounded-full border border-neutral-600 px-3 ${className}`}
         type={type}
         id={id}
+        defaultValue={defaultValue}
         disabled={disabled}
         {...rest}
       />
@@ -28,4 +31,4 @@ const AuthFormInput = ({
   );
 };
 
-export default AuthFormInput;
+export default FormInput;

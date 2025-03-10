@@ -18,17 +18,13 @@ const ProtectedRoute = ({ children }: Props) => {
     }
   }, [user, isLoading, navigate]);
 
-  console.log("user", user);
-
   if (isLoading) {
-    console.log("loading", isLoading);
     return (
       <FullPage>
         <Loader />
       </FullPage>
     );
   }
-  
 
   return children;
 };

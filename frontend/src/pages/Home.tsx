@@ -1,30 +1,36 @@
 import { Navigate } from "react-router-dom";
-import Loader from "../components/Loader";
-import { useAuthContext } from "../contexts/AuthContext";
 import { formatCurrency } from "../utils/formatCurrency";
+import { useUser } from "../features/authentication/useUser";
+import RoundedImage from "../components/RoundedImage";
+import Box from "../components/Box";
 
 const Home = () => {
-  const { user, isLoading } = useAuthContext();
-
-  if (isLoading) {
-    return <Loader />;
-  }
+  const { user } = useUser();
 
   if (!user) {
     return <Navigate to="/login" />;
   }
 
   return (
-    <div>
-      <h1>Welcome {user?.name}</h1>
-      {user.bookValue != null && (
-        <p>Book Value: {formatCurrency(user.bookValue)}</p>
-      )}
-      {user.marketValue != null && (
-        <p>Market Value: {formatCurrency(user.marketValue)}</p>
-      )}
-      <img src={user?.profilePic} alt="Profile Picture" />
-    </div>
+    <Box className="w-[20rem] items-center justify-between">
+      <div>
+        <RoundedImage src={user.profilePic} alt="Profile Pic" />
+        <h1 className="text-center">{user.name}</h1>
+      </div>
+      <div>
+        <h1 className="text-end">Totals</h1>
+        {user.bookValue != null && (
+          <p className="text-end">
+            Book Value: {formatCurrency(user.bookValue)}
+          </p>
+        )}
+        {user.marketValue != null && (
+          <p className="text-end">
+            Market Value: {formatCurrency(user.marketValue)}
+          </p>
+        )}
+      </div>
+    </Box>
   );
 };
 

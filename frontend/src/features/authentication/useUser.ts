@@ -7,11 +7,10 @@ export const useUser = () => {
     isLoading,
     error,
     refetch,
-  } = useQuery({
+  } = useQuery<UserType>({
     queryKey: ["user"],
     queryFn: getMe,
-    retry: 1,
-    staleTime: 0,
+    retry: false,
   });
 
   return { user, isLoading, error, refetch };

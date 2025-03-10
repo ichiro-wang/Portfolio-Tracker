@@ -16,7 +16,7 @@ export const useLogout = () => {
   } = useMutation({
     mutationFn: () => logoutApi(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.removeQueries({ queryKey: ["user"] });
       queryClient.clear();
       navigate("/login", { replace: true });
     },

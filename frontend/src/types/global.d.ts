@@ -14,3 +14,11 @@ type SimpleMessageType = {
 type SimpleErrorType = {
   error: string;
 };
+
+type PortfolioType = {
+  id: string;
+  name: string;
+  createdAt: Date;
+  bookValue: number;
+  marketValue: number;
+};

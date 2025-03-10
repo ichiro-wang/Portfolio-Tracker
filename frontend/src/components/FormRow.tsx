@@ -5,7 +5,7 @@ interface Props {
   children: ReactNode;
 }
 
-const AuthFormRow = ({ error, children }: Props) => {
+const FormRow = ({ error, children }: Props) => {
   return (
     <div>
       {children}
@@ -14,4 +14,4 @@ const AuthFormRow = ({ error, children }: Props) => {
   );
 };
 
-export default AuthFormRow;
+export default FormRow;
