@@ -68,7 +68,7 @@ def login():
         if user and user.validate_password(password):
             # login_user from flask login package
             login_user(user, remember=True)
-            return jsonify(user.to_json()), 200
+            return jsonify(user.to_json(include_properties=True)), 200
         return jsonify({"error": "Invalid credentials"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500

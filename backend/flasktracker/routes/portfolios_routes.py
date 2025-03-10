@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import current_user, login_required
 
-from flasktracker.models import User, Portfolio, Stock
+from flasktracker.models import User, Portfolio
 from flasktracker import db
 
 portfolios = Blueprint("portfolios", __name__, url_prefix="/api/portfolios")
@@ -12,17 +12,10 @@ current_user: User = current_user
 @login_required
 def get_all_portfolios():
     try:
-        ports_json = [port.to_json() for port in current_user.portfolios]
-        return (
-            jsonify(
-                {
-                    "portfolios": ports_json,
-                    "bookValue": current_user.book_value,
-                    "marketValue": current_user.market_value,
-                }
-            ),
-            200,
-        )
+        ports_json = [
+            port.to_json(include_properties=True) for port in current_user.portfolios
+        ]
+        return jsonify(ports_json), 200
     except Exception as e:
         return jsonify({"error": str(e)})
 
