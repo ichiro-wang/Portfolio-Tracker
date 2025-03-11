@@ -9,7 +9,7 @@ interface Props {
 }
 
 const Button = ({
-  className,
+  className = "min-w-20 bg-black text-white hover:bg-zinc-700 ",
   disabled,
   type = "button",
   onClick,
@@ -20,7 +20,7 @@ const Button = ({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={`h-10 min-w-20 flex items-center justify-center rounded-full bg-black px-3 py-1 text-white hover:bg-zinc-700 ${className}`}
+      className={`flex h-10 items-center justify-center rounded-full px-3 py-1 transition-colors duration-75 ${className}`}
     >
       {children}
     </button>

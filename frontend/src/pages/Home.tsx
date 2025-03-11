@@ -12,7 +12,7 @@ const Home = () => {
   }
 
   return (
-    <Box className="w-[20rem] items-center justify-between">
+    <Box className="w-[30rem] items-center justify-between">
       <div>
         <RoundedImage src={user.profilePic} alt="Profile Pic" />
         <h1 className="text-center">{user.name}</h1>

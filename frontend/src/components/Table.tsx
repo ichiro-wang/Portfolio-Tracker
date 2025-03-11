@@ -14,53 +14,60 @@ interface TableProps {
 const Table = ({ columns, children }: TableProps) => {
   return (
     <TableContext.Provider value={{ columns }}>
-      <div role="table">{children}</div>
+      <div role="table" className="w-full">
+        {children}
+      </div>
     </TableContext.Provider>
   );
 };
 
 interface RowProps {
+  className?: string;
   children: ReactNode;
 }
 
-const TableRow = ({ children }: RowProps) => {
+const TableRow = ({ className, children }: RowProps) => {
   const context = useContext(TableContext);
   if (!context) {
-    throw new Error("Table Header used outside Table");
+    throw new Error("Table component used outside Table");
   }
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: context.columns }}>
+    <div
+      className={`grid gap-2 ${className}`}
+      style={{ gridTemplateColumns: `${context.columns}` }}
+    >
       {children}
     </div>
   );
 };
 
-const Header = ({ children }: RowProps) => {
+const Header = ({ className, children }: RowProps) => {
   const context = useContext(TableContext);
   if (!context) {
-    throw new Error("Table Header used outside Table");
+    throw new Error("Table component used outside Table");
   }
 
-  return <TableRow>{children}</TableRow>;
+  return <TableRow className={`font-bold ${className}`}>{children}</TableRow>;
 };
 
-const Row = ({ children }: RowProps) => {
+const Row = ({ className, children }: RowProps) => {
   const context = useContext(TableContext);
   if (!context) {
-    throw new Error("Table Header used outside Table");
+    throw new Error("Table component used outside Table");
   }
 
-  return <TableRow>{children}</TableRow>;
+  return <TableRow className={`text-sm ${className}`}>{children}</TableRow>;
 };
 
 interface BodyProps<T> {
   data: T[];
   render: (data: T) => ReactNode;
+  noDataMessage: string;
 }
 
-const Body = <T,>({ data, render }: BodyProps<T>) => {
-  if (data.length === 0) return <span>No data to show</span>;
+const Body = <T,>({ data, render, noDataMessage }: BodyProps<T>) => {
+  if (data.length === 0) return <span>{noDataMessage}</span>;
 
   return <div>{data.map(render)}</div>;
 };

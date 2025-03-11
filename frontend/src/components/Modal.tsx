@@ -3,10 +3,12 @@ import {
   createContext,
   ReactElement,
   ReactNode,
+  Ref,
   useContext,
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { useOutsideClick } from "../hooks/useOutsideClick";
 
 interface ContextProps {
   openName: string;
@@ -59,11 +61,16 @@ const Window = ({ name, children }: WindowProps) => {
   if (!context) throw new Error("Modal Open used outside Modal");
 
   const { openName, close } = context;
+  const { ref } = useOutsideClick(close);
+
   if (name !== openName) return null;
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex h-screen w-full items-center justify-center bg-black/50 backdrop-blur-sm transition-all duration-500">
-      <div className="rounded-lg bg-white p-8 shadow-lg transition-all duration-500">
+      <div
+        ref={ref as Ref<HTMLDivElement>}
+        className="rounded-lg bg-white p-8 shadow-lg transition-all duration-500"
+      >
         <div>{cloneElement(children, { onCloseModal: close })}</div>
       </div>
     </div>,

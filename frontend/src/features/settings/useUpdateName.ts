@@ -11,9 +11,11 @@ export const useUpdateName = () => {
     error,
   } = useMutation({
     mutationFn: updateNameApi,
-    onSuccess: () => {
+    onSuccess: (updatedUser: UserType) => {
       toast.success("Name updated");
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.setQueryData(["user"], (user: UserType) => {
+        return { ...user, name: updatedUser.name };
+      });
     },
     onError: () => {
       toast.error("Something went wrong");

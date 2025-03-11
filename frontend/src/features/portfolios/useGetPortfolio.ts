@@ -6,15 +6,14 @@ export const useGetPortfolio = () => {
   const { id: fetchedId } = useParams();
   const id = fetchedId ?? "";
 
-  const {
-    data: portfolio,
-    isLoading,
-    error,
-  } = useQuery<PortfolioType>({
+  const { data, isLoading, error } = useQuery<{
+    portfolio: PortfolioType;
+    stocks: StockType[];
+  }>({
     queryFn: () => getPortfolioApi({ id }),
     queryKey: ["portfolio", id],
     retry: false,
   });
 
-  return { portfolio, isLoading, error };
+  return { data, isLoading, error };
 };

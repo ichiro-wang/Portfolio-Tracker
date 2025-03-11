@@ -12,11 +12,12 @@ import Settings from "./pages/Settings";
 import Signup from "./pages/Signup";
 import UnprotectedRoute from "./pages/UnprotectedRoute";
 import Portfolio from "./pages/Portfolio";
+import FullPage from "./components/FullPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 0,
+      staleTime: 60000,
     },
   },
 });
@@ -44,7 +45,14 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
           </Route>
-          <Route path="*" element={<NoPageFound />} />
+          <Route
+            path="*"
+            element={
+              <FullPage>
+                <NoPageFound />
+              </FullPage>
+            }
+          />
         </Routes>
       </BrowserRouter>
       <Toaster

@@ -15,7 +15,7 @@ const Settings = () => {
   const isLoading = isLoadingName || isLoadingPicture;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 w-[30rem]">
       <Box className="items-center justify-between">
         {isLoading ? (
           <Spinner />

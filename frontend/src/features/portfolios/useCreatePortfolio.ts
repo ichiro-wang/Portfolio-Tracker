@@ -11,9 +11,17 @@ export const useCreatePortfolio = () => {
     error,
   } = useMutation({
     mutationFn: createPortfolioApi,
-    onSuccess: (portfolio: PortfolioType) => {
+    onSuccess: (newPortfolio: PortfolioType) => {
       toast.success("Portfolio created");
-      queryClient.setQueryData(["portfolio", portfolio.id], portfolio);
+      queryClient.setQueryData(
+        ["portfolios"],
+        (oldPortfolios: PortfolioType[]) => {
+          return oldPortfolios
+            ? [...oldPortfolios, newPortfolio]
+            : [newPortfolio];
+        },
+      );
+      queryClient.setQueryData(["portfolio", newPortfolio.id], newPortfolio);
     },
     onError: () => {
       toast.error("Error creating portfolio");

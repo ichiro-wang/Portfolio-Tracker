@@ -5,7 +5,7 @@ interface Props {
 
 const Logo = ({ className, width = 300 }: Props) => {
   return (
-    <img className={className} src="logo-main.png" alt="Logo" width={width} />
+    <img className={className} src="/logo-main.png" alt="Logo" width={width} />
   );
 };
 

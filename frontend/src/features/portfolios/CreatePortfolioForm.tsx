@@ -1,4 +1,3 @@
-import React from "react";
 import Form from "../../components/Form";
 import { FieldErrors, useForm } from "react-hook-form";
 import { CreatePortfolioArgs } from "../../services/apiPortfolios";

@@ -11,9 +11,11 @@ export const useUpdatePicture = () => {
     error,
   } = useMutation({
     mutationFn: updatePictureApi,
-    onSuccess: () => {
+    onSuccess: (updatedUser: UserType) => {
       toast.success("Picture updated");
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.setQueryData(["user"], (user: UserType) => {
+        return { ...user, profilePic: updatedUser.profilePic };
+      });
     },
     onError: () => {
       toast.error("Error updating picture");
