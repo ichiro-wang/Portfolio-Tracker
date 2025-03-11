@@ -34,7 +34,7 @@ def create_portfolio():
         db.session.add(new_portfolio)
         db.session.commit()
 
-        return jsonify(new_portfolio.to_json()), 201
+        return jsonify(new_portfolio.to_json(include_properties=True)), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500

@@ -83,3 +83,28 @@ def get_transaction(id: int):
         return jsonify(transaction.to_json())
     except Exception as e:
         return jsonify({"error": str(e)})
+
+
+@transactions.route("/delete/<int:id>", methods=["DELETE"])
+@login_required
+def delete_transaction(id: int):
+    try:
+        data = request.json
+
+        portfolio_id = data.get("portfolioId")
+        if not portfolio_id:
+            return jsonify({"error": "No portfolio specified"}), 400
+        if portfolio_id not in [p.id for p in current_user.portfolios]:
+            return jsonify({"error": "Invalid request"}), 400
+
+        transaction_to_delete = db.session.get(Transaction, id)
+        if not transaction_to_delete:
+            return jsonify({"error": "No transaction specified"}), 400
+
+        db.session.delete(transaction_to_delete)
+        db.session.commit()
+
+        return jsonify({"message": "Transaction deleted"})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
