@@ -104,7 +104,7 @@ def delete_transaction(id: int):
         db.session.delete(transaction_to_delete)
         db.session.commit()
 
-        return jsonify({"message": "Transaction deleted"})
+        return jsonify({"deletedId": id})
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
