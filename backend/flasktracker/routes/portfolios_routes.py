@@ -48,7 +48,7 @@ def get_portfolio(id: int):
         if not portfolio:
             return jsonify({"error": f"Portfolio with id {id} could not be found"}), 404
         if portfolio.owner_id != current_user.id:
-            return jsonify({"error": "Invalid request"}), 400
+            return jsonify({"error": "Invalid request"}), 403
 
         stocks_json = [s.to_json(include_properties=True) for s in portfolio.stocks]
 
@@ -73,12 +73,12 @@ def delete_portfolio(id: int):
         if not port_to_delete:
             return jsonify({"error": f"Portfolio with id {id} could not be found"}), 404
         if port_to_delete.owner_id != current_user.id:
-            return jsonify({"error": "Invalid request"}), 400
+            return jsonify({"error": "Invalid request"}), 403
 
         db.session.delete(port_to_delete)
         db.session.commit()
 
-        return jsonify({"deletedId": id}), 200
+        return jsonify({"deletedId": str(id)}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)})

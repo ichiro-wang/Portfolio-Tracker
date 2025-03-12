@@ -24,9 +24,10 @@ def create_transaction():
         portfolio_id = data.get("portfolioId")
         if not portfolio_id:
             return jsonify({"error": "No portfolio specified"}), 400
-
-        if portfolio_id not in [p.id for p in current_user.portfolios]:
-            return jsonify({"error": "Invalid request"}), 400
+        
+        exists = db.session.query(db.session.query(Portfolio.id).filter(Portfolio.id == portfolio_id, Portfolio.owner_id == current_user.id).exists()).scalar()
+        if not exists:
+            return jsonify({"error": "Invalid request"}), 403
 
         type = data.get("type", "").strip()
         if type not in [TransactionType.BUY.value, TransactionType.SELL.value]:
@@ -49,7 +50,7 @@ def create_transaction():
             db.session.add(new_wrapper)
             db.session.flush()
 
-        stock: Stock = db.session.query(Stock).filter(Stock.ticker == ticker).first()
+        stock: Stock = db.session.query(Stock).filter(Stock.ticker == ticker, Stock.portfolio_id == portfolio_id).first()
         if not stock:
             new_stock = Stock(
                 ticker=ticker, wrapper_id=stock_wrapper.id, portfolio_id=portfolio_id
@@ -78,7 +79,7 @@ def get_transaction(id: int):
         if not transaction:
             return jsonify({"error": "Transaction not found"}), 404
         if transaction.stock.portfolio.owner_id != current_user.id:
-            return jsonify({"error": "Invalid request"}), 400
+            return jsonify({"error": "Invalid request"}), 403
 
         return jsonify(transaction.to_json())
     except Exception as e:
@@ -95,11 +96,11 @@ def delete_transaction(id: int):
         if not portfolio_id:
             return jsonify({"error": "No portfolio specified"}), 400
         if portfolio_id not in [p.id for p in current_user.portfolios]:
-            return jsonify({"error": "Invalid request"}), 400
+            return jsonify({"error": "Invalid request"}), 403
 
         transaction_to_delete = db.session.get(Transaction, id)
         if not transaction_to_delete:
-            return jsonify({"error": "No transaction specified"}), 400
+            return jsonify({"error": "Transaction not found"}), 404
 
         db.session.delete(transaction_to_delete)
         db.session.commit()
