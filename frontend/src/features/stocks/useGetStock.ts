@@ -1,17 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { getStock as getStockApi } from "../../services/apiStocks";
 
-export const useGetStock = () => {
-  const { id: fetchedId } = useParams();
-  const id = fetchedId ?? "";
-
+export const useGetStock = (id: number) => {
   const {
     data: stock,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["stock", id],
-    queryFn: () => console.log(""),
+    queryKey: ["stock", String(id)],
+    queryFn: () => getStockApi({ id }),
     retry: false,
   });
 

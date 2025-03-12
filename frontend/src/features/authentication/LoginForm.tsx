@@ -40,6 +40,7 @@ const LoginForm = () => {
             type="text"
             id="email"
             label="Email"
+            defaultValue="lebronjr@gmail.com"
             disabled={isLoading}
             {...register("email", { required: "Email is required" })}
           />
@@ -50,6 +51,7 @@ const LoginForm = () => {
             type="password"
             id="password"
             label="Pasword"
+            defaultValue="lebron23"
             disabled={isLoading}
             {...register("password", { required: "Password is required" })}
           />

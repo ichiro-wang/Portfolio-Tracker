@@ -39,7 +39,7 @@ const UpdatePictureForm = () => {
           {...register("image", { required: "Please upload a picture" })}
         />
       </FormRow>
-      <Button disabled={isLoading} type="submit" className="mt-3">
+      <Button disabled={isLoading} type="submit" className="mt-3 bg-black text-white hover:bg-zinc-700">
         {isLoading ? <Spinner /> : "Confirm"}
       </Button>
     </Form>

@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useContext } from "react";
+import Loader from "./Loader";
 
 interface TableContextProps {
   columns: string;
@@ -64,9 +65,14 @@ interface BodyProps<T> {
   data: T[];
   render: (data: T) => ReactNode;
   noDataMessage: string;
+  isLoading?: boolean;
 }
 
-const Body = <T,>({ data, render, noDataMessage }: BodyProps<T>) => {
+const Body = <T,>({ data, render, noDataMessage, isLoading }: BodyProps<T>) => {
+  if (isLoading) {
+    return <Loader />;
+  }
+
   if (data.length === 0) return <span>{noDataMessage}</span>;
 
   return <div>{data.map(render)}</div>;

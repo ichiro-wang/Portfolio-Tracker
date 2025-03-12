@@ -40,7 +40,11 @@ const UpdateNameForm = () => {
           {...register("name", { required: "Name cannot be blank" })}
         />
       </FormRow>
-      <Button className="mt-3" disabled={isLoading} type="submit">
+      <Button
+        disabled={isLoading}
+        type="submit"
+        className="mt-3 bg-black text-white hover:bg-zinc-700"
+      >
         {isLoading ? <Spinner /> : "Confirm"}
       </Button>
     </Form>

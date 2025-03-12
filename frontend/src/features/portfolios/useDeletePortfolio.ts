@@ -1,12 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deletePortfolio as deletePortfolioApi } from "../../services/apiPortfolios";
-import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 export const useDeletePortfolio = () => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { id: fetchedId } = useParams();
-  const id = fetchedId ?? "";
 
   const {
     mutate: deletePortfolio,
@@ -14,9 +13,20 @@ export const useDeletePortfolio = () => {
     error,
   } = useMutation({
     mutationFn: (id: string) => deletePortfolioApi({ id }),
-    onSuccess: () => {
+    onSuccess: (data: { deletedId: string }) => {
       toast.success("Portfolio deleted");
-      queryClient.removeQueries({ queryKey: ["portfolio", id] });
+      queryClient.removeQueries({
+        queryKey: ["portfolio", data.deletedId],
+      });
+      queryClient.setQueryData(
+        ["portfolios"],
+        (oldPortfolios: PortfolioType[] = []) => {
+          return oldPortfolios.filter(
+            (portfolio) => portfolio.id !== data.deletedId,
+          );
+        },
+      );
+      navigate("/portfolios", { replace: true });
     },
     onError: () => {
       toast.error("Error deleting portfolio");

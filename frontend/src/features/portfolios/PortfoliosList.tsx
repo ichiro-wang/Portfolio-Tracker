@@ -20,7 +20,7 @@ const PortfoliosList = () => {
           <Box
             onClick={() => navigate(`/portfolios/${portfolio.id}`)}
             className="justify-between hover:cursor-pointer"
-            key={crypto.randomUUID()}
+            key={portfolio.id}
           >
             <PortfolioRow portfolio={portfolio} />
           </Box>

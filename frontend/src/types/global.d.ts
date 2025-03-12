@@ -3,8 +3,8 @@ type UserType = {
   name: string;
   email: string;
   profilePic: string;
-  bookValue: number?;
-  marketValue: number?;
+  bookValue?: number;
+  marketValue?: number;
 };
 
 type PortfolioType = {

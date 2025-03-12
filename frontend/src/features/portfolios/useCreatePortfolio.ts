@@ -21,7 +21,10 @@ export const useCreatePortfolio = () => {
             : [newPortfolio];
         },
       );
-      queryClient.setQueryData(["portfolio", newPortfolio.id], newPortfolio);
+      queryClient.setQueryData(["portfolio", String(newPortfolio.id)], {
+        portfolio: newPortfolio,
+        stocks: [],
+      });
     },
     onError: () => {
       toast.error("Error creating portfolio");

@@ -3,8 +3,9 @@ interface Props {
   type: string;
   id: string;
   label: string;
-  defaultValue?: string;
+  defaultValue?: string | number;
   disabled: boolean;
+  placeholder?: string;
 }
 
 const FormInput = ({
@@ -14,6 +15,7 @@ const FormInput = ({
   label,
   defaultValue = "",
   disabled,
+  placeholder,
   ...rest
 }: Props) => {
   return (
@@ -25,6 +27,7 @@ const FormInput = ({
         id={id}
         defaultValue={defaultValue}
         disabled={disabled}
+        placeholder={placeholder}
         {...rest}
       />
     </div>

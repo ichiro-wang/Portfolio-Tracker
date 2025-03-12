@@ -3,7 +3,7 @@ import StockRow from "../../hooks/StockRow";
 import { useGetPortfolio } from "./useGetPortfolio";
 
 const PortfolioTable = () => {
-  const { data } = useGetPortfolio();
+  const { data, isLoading } = useGetPortfolio();
 
   if (!data) {
     return <span>Portfolio Table used in wrong place</span>;
@@ -26,6 +26,7 @@ const PortfolioTable = () => {
           return <StockRow key={stock.id} stock={stock} />;
         }}
         noDataMessage="No stocks. Start by adding a transaction."
+        isLoading={isLoading}
       />
     </Table>
   );

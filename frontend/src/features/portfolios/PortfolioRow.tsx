@@ -7,7 +7,7 @@ interface Props {
 const PortfolioRow = ({ portfolio }: Props) => {
   return (
     <>
-      <span className="font-bold">{portfolio.name}</span>
+      <span className="flex items-center font-bold">{portfolio.name}</span>
       <div className="flex flex-col">
         <span className="text-end">
           Book Value: {formatCurrency(portfolio.bookValue)}

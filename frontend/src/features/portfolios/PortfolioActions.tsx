@@ -2,12 +2,26 @@ import { HiOutlinePlusCircle, HiTrash } from "react-icons/hi2";
 import { formatCurrency } from "../../utils/formatCurrency";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
+import ConfirmDelete from "../../components/ConfirmDelete";
+import { useDeletePortfolio } from "./useDeletePortfolio";
+import { useParams } from "react-router-dom";
+import Loader from "../../components/Loader";
+import CreateTransactionForm from "../transactions/CreateTransactionForm";
 
 interface Props {
   portfolio: PortfolioType;
 }
 
 const PortfolioActions = ({ portfolio }: Props) => {
+  const { id: fetchedId } = useParams();
+  const id = fetchedId ?? "";
+
+  const { deletePortfolio, isLoading } = useDeletePortfolio();
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
   return (
     <>
       <div className="flex flex-col justify-center">
@@ -27,7 +41,7 @@ const PortfolioActions = ({ portfolio }: Props) => {
             </Button>
           </Modal.Open>
           <Modal.Window name="add">
-            <h1>hello</h1>
+            <CreateTransactionForm />
           </Modal.Window>
           <Modal.Open openName="delete">
             <Button className="min-w-0 rounded-full border border-red-500 bg-red-500 px-2 text-white hover:bg-white hover:text-red-500">
@@ -35,7 +49,10 @@ const PortfolioActions = ({ portfolio }: Props) => {
             </Button>
           </Modal.Open>
           <Modal.Window name="delete">
-            <h1>delete</h1>
+            <ConfirmDelete
+              onClick={() => deletePortfolio(id)}
+              disabled={isLoading}
+            />
           </Modal.Window>
         </Modal>
       </div>
