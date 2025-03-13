@@ -1,9 +1,13 @@
-const Loader = () => {
+interface Props {
+  className?: string;
+}
+
+const Loader = ({ className }: Props) => {
   return (
     <div
       aria-label="Orange and tan hamster running in a metal wheel"
       role="img"
-      className="wheel-and-hamster"
+      className={`wheel-and-hamster ${className}`}
     >
       <div className="wheel"></div>
       <div className="hamster">

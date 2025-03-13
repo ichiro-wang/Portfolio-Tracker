@@ -1,5 +1,5 @@
-import React from "react";
 import Button from "./Button";
+import Spinner from "./Spinner";
 
 interface Props {
   resourceName?: string;
@@ -28,8 +28,14 @@ const ConfirmDelete = ({
           </Button>
         ) : null}
 
-        <Button onClick={onClick} disabled={disabled}>
-          Confirm
+        <Button
+          onClick={() => {
+            onClick();
+            onCloseModal?.();
+          }}
+          disabled={disabled}
+        >
+          {disabled ? <Spinner /> : "Confirm"}
         </Button>
       </div>
     </>

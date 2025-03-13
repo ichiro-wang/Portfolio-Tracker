@@ -4,23 +4,27 @@ import Modal from "../../components/Modal";
 import Button from "../../components/Button";
 import ConfirmDelete from "../../components/ConfirmDelete";
 import { useDeletePortfolio } from "./useDeletePortfolio";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import Loader from "../../components/Loader";
 import CreateTransactionForm from "../transactions/CreateTransactionForm";
+import { useGetPortfolio } from "./useGetPortfolio";
 
-interface Props {
-  portfolio: PortfolioType;
-}
+const PortfolioActions = () => {
+  const { data, isLoading: isLoadingGet } = useGetPortfolio();
+  const { deletePortfolio, isLoading: isLoadingDelete } = useDeletePortfolio();
 
-const PortfolioActions = ({ portfolio }: Props) => {
   const { id: fetchedId } = useParams();
   const id = fetchedId ?? "";
 
-  const { deletePortfolio, isLoading } = useDeletePortfolio();
-
-  if (isLoading) {
+  if (isLoadingGet) {
     return <Loader />;
   }
+
+  if (!data) {
+    return <Navigate to="/error" replace={true} />;
+  }
+
+  const { portfolio } = data;
 
   return (
     <>
@@ -28,9 +32,13 @@ const PortfolioActions = ({ portfolio }: Props) => {
         <span className="font-bold">{portfolio.name}</span>
         <div className="grid grid-cols-2">
           <span>Book Value:&nbsp;</span>
-          <span>{formatCurrency(portfolio.bookValue)}</span>
+          <span className="text-end">
+            {formatCurrency(portfolio.bookValue)}
+          </span>
           <span>Market Value:&nbsp;</span>
-          <span>{formatCurrency(portfolio.marketValue)}</span>
+          <span className="text-end">
+            {formatCurrency(portfolio.marketValue)}
+          </span>
         </div>
       </div>
       <div className="flex gap-1">
@@ -51,7 +59,7 @@ const PortfolioActions = ({ portfolio }: Props) => {
           <Modal.Window name="delete">
             <ConfirmDelete
               onClick={() => deletePortfolio(id)}
-              disabled={isLoading}
+              disabled={isLoadingDelete}
             />
           </Modal.Window>
         </Modal>

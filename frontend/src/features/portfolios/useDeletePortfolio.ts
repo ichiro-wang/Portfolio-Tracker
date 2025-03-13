@@ -13,10 +13,11 @@ export const useDeletePortfolio = () => {
     error,
   } = useMutation({
     mutationFn: (id: string) => deletePortfolioApi({ id }),
-    onSuccess: (data: { deletedId: string }) => {
+    onSuccess: (data: { deletedId: number }) => {
+      console.log(data.deletedId);
       toast.success("Portfolio deleted");
       queryClient.removeQueries({
-        queryKey: ["portfolio", data.deletedId],
+        queryKey: ["portfolio", String(data.deletedId)],
       });
       queryClient.setQueryData(
         ["portfolios"],

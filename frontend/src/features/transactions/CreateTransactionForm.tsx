@@ -9,6 +9,7 @@ import ButtonGroup from "../../components/ButtonGroup";
 import Button from "../../components/Button";
 import FormOptions from "../../components/FormOptions";
 import { TransactionOptions } from "../../types";
+import Spinner from "../../components/Spinner";
 
 interface Props {
   onCloseModal?: () => void;
@@ -96,8 +97,9 @@ const CreateTransactionForm = ({ onCloseModal }: Props) => {
             disabled={isLoading}
             id="quantity"
             label="Quantity"
-            defaultValue={0.00}
+            defaultValue={0.0}
             type="number"
+            step="any"
             {...register("quantity", {
               required: "Specify the share quantity",
               validate: (value) =>
@@ -110,8 +112,9 @@ const CreateTransactionForm = ({ onCloseModal }: Props) => {
             disabled={isLoading}
             id="price"
             label="Price"
-            defaultValue={0.00}
+            defaultValue={0.0}
             type="number"
+            step="any"
             {...register("price", {
               required: "Specify the price",
               validate: (value) => value > 0 || "Price must be greater than 0",
@@ -132,7 +135,7 @@ const CreateTransactionForm = ({ onCloseModal }: Props) => {
           Cancel
         </Button>
         <Button type="submit" disabled={isLoading}>
-          Confirm
+          {isLoading ? <Spinner /> : "Confirm"}
         </Button>
       </ButtonGroup>
     </Form>

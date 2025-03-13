@@ -62,7 +62,7 @@ const Row = ({ className, children }: RowProps) => {
 };
 
 interface BodyProps<T> {
-  data: T[];
+  data: T[] | undefined;
   render: (data: T) => ReactNode;
   noDataMessage: string;
   isLoading?: boolean;
@@ -71,6 +71,10 @@ interface BodyProps<T> {
 const Body = <T,>({ data, render, noDataMessage, isLoading }: BodyProps<T>) => {
   if (isLoading) {
     return <Loader />;
+  }
+
+  if (!data) {
+    return <h1>No data</h1>;
   }
 
   if (data.length === 0) return <span>{noDataMessage}</span>;

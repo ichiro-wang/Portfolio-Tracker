@@ -1,3 +1,4 @@
 export const formatCurrency = (dollars: number): string => {
-  return `$${Number(dollars).toFixed(2)}`;
+  const isNegative = dollars < 0;
+  return `${isNegative ? "-" : ""}$${Math.abs(dollars).toFixed(2)}`;
 };

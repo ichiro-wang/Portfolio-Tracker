@@ -12,9 +12,19 @@ export const useOutsideClick = (
       handler();
     };
 
-    document.addEventListener("click", handleClick, listenCapture);
+    const handleEsc = (e: globalThis.KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handler();
+      }
+    };
 
-    return () => document.removeEventListener("click", handleClick);
+    document.addEventListener("click", handleClick, listenCapture);
+    document.addEventListener("keydown", handleEsc);
+
+    return () => {
+      document.removeEventListener("click", handleClick);
+      document.removeEventListener("keydown", handleEsc);
+    };
   }, [handler, listenCapture]);
 
   return { ref };

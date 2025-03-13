@@ -14,8 +14,9 @@ export const useCreateTransaction = () => {
     error,
   } = useMutation({
     mutationFn: createTransactionApi,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["portfolio", id] });
+    onSuccess: (data: { stockId: number }) => {
+      queryClient.refetchQueries({ queryKey: ["portfolio", id] });
+      queryClient.refetchQueries({ queryKey: ["stock", String(data.stockId)] });
       toast.success("Transaction Created");
     },
     onError: () => {

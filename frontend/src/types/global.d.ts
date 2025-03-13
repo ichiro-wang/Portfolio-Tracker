@@ -1,5 +1,5 @@
 type UserType = {
-  id: string;
+  id: number;
   name: string;
   email: string;
   profilePic: string;
@@ -8,7 +8,7 @@ type UserType = {
 };
 
 type PortfolioType = {
-  id: string;
+  id: number;
   name: string;
   createdAt: Date;
   bookValue: number;
@@ -16,7 +16,7 @@ type PortfolioType = {
 };
 
 type StockType = {
-  id: string;
+  id: number;
   ticker: string;
   createdAt: string; // ISO date format
   totalQuantity: number;
@@ -29,7 +29,7 @@ type StockType = {
 };
 
 type TransactionType = {
-  id: string;
+  id: number;
   type: "buy" | "sell";
   quantity: number;
   price: number;

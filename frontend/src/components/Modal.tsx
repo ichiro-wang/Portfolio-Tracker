@@ -53,10 +53,15 @@ const Open = ({ openName, children }: OpenProps) => {
 
 interface WindowProps {
   name: string;
+  className?: string;
   children: ReactElement<{ onCloseModal: () => void }>;
 }
 
-const Window = ({ name, children }: WindowProps) => {
+const Window = ({
+  name,
+  className = "fixed inset-0 z-50 flex h-screen w-full items-center justify-center bg-black/50 backdrop-blur-sm transition-all duration-500",
+  children,
+}: WindowProps) => {
   const context = useContext(ModalContext);
   if (!context) throw new Error("Modal Open used outside Modal");
 
@@ -66,7 +71,7 @@ const Window = ({ name, children }: WindowProps) => {
   if (name !== openName) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex h-screen w-full items-center justify-center bg-black/50 backdrop-blur-sm transition-all duration-500">
+    <div className={`${className}`}>
       <div
         ref={ref as Ref<HTMLDivElement>}
         className="rounded-lg bg-white p-8 shadow-lg transition-all duration-500"

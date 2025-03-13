@@ -33,3 +33,23 @@ export const createTransaction = async ({
 
   return res.data;
 };
+
+interface DeleteTransactionArgs {
+  portfolioId: number;
+  id: number;
+}
+
+export const deleteTransaction = async ({
+  id,
+  portfolioId,
+}: DeleteTransactionArgs) => {
+  const res = await axios.delete(`/api/transactions/delete/${id}`, {
+    data: { portfolioId },
+  });
+
+  if (res.data.error) {
+    throw new Error(res.data.error);
+  }
+
+  return res.data;
+};

@@ -6,6 +6,7 @@ interface Props {
   defaultValue?: string | number;
   disabled: boolean;
   placeholder?: string;
+  step?: string;
 }
 
 const FormInput = ({
