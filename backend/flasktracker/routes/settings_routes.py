@@ -1,3 +1,4 @@
+from typing import cast
 from flask import Blueprint, request, jsonify
 from flask_login import current_user, login_required
 from flasktracker.models import User
@@ -11,14 +12,14 @@ load_dotenv()
 from firebase_admin import storage
 
 settings = Blueprint("settings", __name__, url_prefix="/api/settings")
-current_user: User = current_user
+authenticated_user: User = cast(User, current_user)
 
 
 # simple route for getting current user details
 @settings.route("/me", methods=["GET"])
 @login_required
 def get_me():
-    return jsonify(current_user.to_json()), 200
+    return jsonify(authenticated_user.to_json()), 200
 
 
 # receives a name and updates the current user
@@ -32,10 +33,10 @@ def update_name():
         if not name:
             return jsonify({"error": "Invalid name"}), 400
 
-        current_user.name = name
+        authenticated_user.name = name
         db.session.commit()
 
-        return jsonify(current_user.to_json()), 200
+        return jsonify(authenticated_user.to_json()), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
@@ -65,10 +66,10 @@ def update_picture():
         blob.make_public()
 
         # need old link to delete from firebase
-        old_profile_pic: str = current_user.profile_pic
+        old_profile_pic: str = authenticated_user.profile_pic
 
         # update image link
-        current_user.profile_pic = blob.public_url
+        authenticated_user.profile_pic = blob.public_url
         db.session.commit()
 
         if old_profile_pic != os.getenv("DEFAULT_PICTURE"):
@@ -76,7 +77,7 @@ def update_picture():
             old_blob = bucket.blob(object_name)
             old_blob.delete()
 
-        return jsonify(current_user.to_json())
+        return jsonify(authenticated_user.to_json())
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500

@@ -95,6 +95,10 @@ class Portfolio(db.Model):
         order_by="Stock.created_at",
     )
 
+    created_at: Mapped[datetime] = db.Column(
+        db.DateTime, nullable=False, default=datetime.now
+    )
+
     @property
     def book_value(self):
         return sum(s.book_value for s in self.stocks)
@@ -102,10 +106,6 @@ class Portfolio(db.Model):
     @property
     def market_value(self):
         return sum(s.market_value for s in self.stocks)
-
-    created_at: Mapped[datetime] = db.Column(
-        db.DateTime, nullable=False, default=datetime.now
-    )
 
     def to_json(self, include_properties=False):
         res = {
@@ -131,6 +131,10 @@ class StockWrapper(db.Model):
 
     updated_at: Mapped[datetime] = db.Column(db.DateTime)
 
+    stocks: Mapped[list["Stock"]] = db.relationship(
+        "Stock", back_populates="wrapper", lazy=True, cascade="all, delete-orphan"
+    )
+
     def _update_cache(self):
         if not self.updated_at or self.updated_at < datetime.now() - timedelta(hours=8):
             data = get_stock_details(self.ticker)
@@ -145,10 +149,6 @@ class StockWrapper(db.Model):
     def market_price(self) -> float:
         self._update_cache()
         return self.market_cache
-
-    stocks: Mapped[list["Stock"]] = db.relationship(
-        "Stock", back_populates="wrapper", lazy=True, cascade="all, delete-orphan"
-    )
 
     def to_json(self):
         return {
@@ -174,7 +174,7 @@ class Stock(db.Model):
     portfolio_id: Mapped[int] = db.Column(
         db.Integer, db.ForeignKey("portfolios.id"), nullable=False
     )
-    portfolio: Mapped[list["Portfolio"]] = db.relationship(
+    portfolio: Mapped["Portfolio"] = db.relationship(
         "Portfolio", back_populates="stocks"
     )
 
@@ -191,6 +191,10 @@ class Stock(db.Model):
         lazy=True,
         cascade="all, delete-orphan",
         order_by="Transaction.date",
+    )
+
+    created_at: Mapped[datetime] = db.Column(
+        db.DateTime, nullable=False, default=datetime.now
     )
 
     @property
@@ -241,10 +245,6 @@ class Stock(db.Model):
     @property
     def market_value(self):
         return self.market_price * self.open_quantity
-
-    created_at: Mapped[datetime] = db.Column(
-        db.DateTime, nullable=False, default=datetime.now
-    )
 
     def to_json(self, include_properties=False):
         res = {
