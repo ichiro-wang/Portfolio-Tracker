@@ -10,7 +10,7 @@ import ButtonGroup from "../../components/ButtonGroup";
 
 interface Props {
   onCloseModal?: () => void;
-}
+} 
 
 const CreatePortfolioForm = ({ onCloseModal }: Props) => {
   const { createPortfolio, isLoading } = useCreatePortfolio();
