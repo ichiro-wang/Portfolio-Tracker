@@ -1,3 +1,5 @@
+This is the implementation before switching to a react frontend. Return to main branch to view current version. 
+
 # Portfolio Tracker
 
 ## Description
@@ -29,7 +31,7 @@
 
 - PostgreSQL (Production), SQLite (Early Development and Testing)
 
-## Unit Testing
+## Testing
 
 - Unit testing for this project was conducted using the pytest and unittest frameworks. The corresponding test cases can
   be found in the [tests](tests/) folder.
