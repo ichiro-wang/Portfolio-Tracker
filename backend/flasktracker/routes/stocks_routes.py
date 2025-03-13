@@ -25,3 +25,20 @@ def get_stock_transactions(id: int):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@stocks.route("/delete/<int:id>", methods=["DELETE"])
+@login_required
+def delete_stock(id: int):
+    try:
+        stock: Stock = db.session.get(Stock, id)
+        if not stock:
+            return jsonify({"error": "Stock with given id not found"}), 404
+        if stock.portfolio.owner_id != authenticated_user.id:
+            return jsonify({"error": "Invalid request"}), 400
+
+        db.session.delete(stock)
+        return jsonify({"deletedId": id})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)})

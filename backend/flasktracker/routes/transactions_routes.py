@@ -28,7 +28,10 @@ def create_transaction():
 
         exists = db.session.query(
             db.session.query(Portfolio.id)
-            .filter(Portfolio.id == portfolio_id, Portfolio.owner_id == authenticated_user.id)
+            .filter(
+                Portfolio.id == portfolio_id,
+                Portfolio.owner_id == authenticated_user.id,
+            )
             .exists()
         ).scalar()
         if not exists:

@@ -14,7 +14,8 @@ authenticated_user: User = cast(User, current_user)
 def get_all_portfolios():
     try:
         ports_json = [
-            port.to_json(include_properties=True) for port in authenticated_user.portfolios
+            port.to_json(include_properties=True)
+            for port in authenticated_user.portfolios
         ]
         return jsonify(ports_json), 200
     except Exception as e:
