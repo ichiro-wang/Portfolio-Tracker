@@ -59,7 +59,7 @@ const CreatePortfolioForm = ({ onCloseModal }: Props) => {
             onCloseModal?.();
           }}
         >
-          {isLoading ? <Spinner /> : "Cancel"}
+          Cancel
         </Button>
         <Button disabled={isLoading} type="submit">
           {isLoading ? <Spinner /> : "Create"}

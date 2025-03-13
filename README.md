@@ -36,6 +36,5 @@
 
 ## Testing
 
-- Testing to be done
-  - pytest, Postman for backend
-- Originally used pytest before refactor
+- Unit testing for this project was conducted using the pytest and unittest frameworks. The corresponding test cases can
+  be found in the [tests](tests/) folder.
