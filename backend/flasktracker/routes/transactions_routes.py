@@ -114,10 +114,12 @@ def delete_transaction(id: int):
         if not transaction_to_delete:
             return jsonify({"error": "Transaction not found"}), 404
 
+        stock_id = transaction_to_delete.stock_id
+
         db.session.delete(transaction_to_delete)
         db.session.commit()
 
-        return jsonify({"deletedId": id})
+        return jsonify({"deletedId": id, "stockId": stock_id})
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500

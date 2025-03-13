@@ -80,7 +80,7 @@ def delete_portfolio(id: int):
         db.session.delete(port_to_delete)
         db.session.commit()
 
-        return jsonify({"deletedId": str(id)}), 200
+        return jsonify({"deletedId": id}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)})

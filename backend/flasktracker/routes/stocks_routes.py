@@ -37,8 +37,11 @@ def delete_stock(id: int):
         if stock.portfolio.owner_id != authenticated_user.id:
             return jsonify({"error": "Invalid request"}), 400
 
+        portfolio_id = stock.portfolio_id
+
         db.session.delete(stock)
-        return jsonify({"deletedId": id})
+        db.session.commit()
+        return jsonify({"deletedId": id, "portfolioId": portfolio_id}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": str(e)})
+        return jsonify({"error": str(e)}), 500

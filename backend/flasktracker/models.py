@@ -303,6 +303,7 @@ class Transaction(db.Model):
             "quantity": self.quantity,
             "price": self.price,
             "fees": self.fees,
+            "stockId": self.stock_id,
         }
 
     def __repr__(self):
