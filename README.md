@@ -2,9 +2,7 @@
 
 ## Description
 
-- This is a web app designed to help users manage their investment portfolios.
-- Track multiple portfolios, and track the performance of each portfolio
-- Track a portfolio's underlying stocks, and manage transactions such as buying or selling stocks.
+- A web application designed for investors to manage their portfolios efficiently. Users can track stock performance in real-time, manage transactions, and gain insights into their investments.
 
 ## Features
 
@@ -18,6 +16,10 @@
 ### Backend:
 
 - Python, Flask
+  - Flask Login for session management
+- Database:
+  - PostgreSQL for relational data
+  - Firebase for user profile pictures
 - ORM: SQLAlchemy
 
 ### Frontend:
@@ -29,12 +31,15 @@
   - Render Props Pattern (Example [here](frontend/src/components/Table.tsx))
 - Styling: Tailwind CSS
 
-### Database:
-
-- PostgreSQL
-- Firebase for image files
-
 ## Testing
 
+<<<<<<< HEAD
 - Unit testing for this project was conducted using the pytest and unittest frameworks. The corresponding test cases can
   be found in the [tests](tests/) folder.
+=======
+- Testing to be done
+  - pytest, Postman for backend
+  - Jest, React Testing Library for frontend
+  - Cypress for E2E
+- Originally used pytest for all testing before refactoring to react frontend
+>>>>>>> 7aa3f2e48ff01a88ad84665e781c41913fc442c1
