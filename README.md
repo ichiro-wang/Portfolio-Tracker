@@ -21,6 +21,7 @@
   - PostgreSQL for relational data
   - Firebase for user profile pictures
 - ORM: SQLAlchemy
+  - Models [here](backend/flasktracker/models.py)
 
 ### Frontend:
 
@@ -33,13 +34,8 @@
 
 ## Testing
 
-<<<<<<< HEAD
-- Unit testing for this project was conducted using the pytest and unittest frameworks. The corresponding test cases can
-  be found in the [tests](tests/) folder.
-=======
 - Testing to be done
   - pytest, Postman for backend
   - Jest, React Testing Library for frontend
   - Cypress for E2E
 - Originally used pytest for all testing before refactoring to react frontend
->>>>>>> 7aa3f2e48ff01a88ad84665e781c41913fc442c1
