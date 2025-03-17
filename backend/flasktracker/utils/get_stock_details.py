@@ -1,23 +1,11 @@
 import requests
-
-# from requests import Session
-# from requests.adapters import HTTPAdapter
-# from urllib3.util import Retry
-
-from dotenv import load_dotenv  # type: ignore
+from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
-# s = Session()
-# retries = Retry(
-#     total=3,
-#     backoff_factor=0.1,
-#     status_forcelist=[502, 503, 504],
-# )
-# s.mount("https://", HTTPAdapter(max_retries=retries))
 
-
+# helper function to make call to third party stock api
 def get_stock_details(ticker: str):
     try:
         url = "https://www.alphavantage.co/query"

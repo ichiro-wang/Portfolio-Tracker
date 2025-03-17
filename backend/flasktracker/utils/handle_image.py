@@ -5,6 +5,7 @@ import secrets
 import io
 
 
+# helper function for formatting image before uploading to firebase
 def handle_image(file):
     # ensure filename is safe
     safe_file_name = secure_filename(file.filename)
@@ -13,6 +14,8 @@ def handle_image(file):
     file_name, file_ext = os.path.splitext(safe_file_name)
     file_ext = file_ext.lower()
 
+    # handle extensions
+    # TODO: check file signature to verify file type
     if file_ext in [".jpg", ".jpeg"]:
         file_ext = ".jpeg"
         image_format = "JPEG"
@@ -26,7 +29,7 @@ def handle_image(file):
     random_hex = secrets.token_hex(8)
     storage_file_name = random_hex + "_" + file_name + file_ext
 
-    # resize using PIL for storage purposes
+    # shrink using PIL for storage purposes
     output_size = (150, 150)
     i = Image.open(file)
     i.thumbnail(output_size)
