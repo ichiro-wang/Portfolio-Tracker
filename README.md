@@ -34,9 +34,4 @@
 
 ## Testing
 
-- Testing to be done
-  - pytest, Postman for backend
-  - Jest, React Testing Library for frontend
-  - Cypress for E2E
-- Originally used pytest for all testing before refactoring to react frontend
-  - See [here](https://github.com/ichirojwang/Portfolio-Tracker/tree/old-implementation)
+- Backend: pytest ([here](backend/tests/))

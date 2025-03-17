@@ -4,6 +4,7 @@
 **/__pycache__
 **/helloworld.txt
 **/requests.rest
+**/migrations
 
 # Editor directories and files
 .vscode/*
