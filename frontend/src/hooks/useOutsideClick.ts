@@ -7,11 +7,13 @@ export const useOutsideClick = (
   const ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
+    // click outside modal
     const handleClick = (e: MouseEvent) => {
       if (!ref.current || ref.current?.contains(e.target as Node)) return;
       handler();
     };
 
+    // user presses escape
     const handleEsc = (e: globalThis.KeyboardEvent) => {
       if (e.key === "Escape") {
         handler();
