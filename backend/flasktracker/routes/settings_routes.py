@@ -4,12 +4,12 @@ from flask_login import current_user, login_required
 from flasktracker.models import User
 from flasktracker import db
 from flasktracker.utils.handle_image import handle_image
+from firebase_admin import storage
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
-from firebase_admin import storage
 
 settings = Blueprint("settings", __name__, url_prefix="/api/settings")
 authenticated_user: User = cast(User, current_user)
@@ -77,7 +77,7 @@ def update_picture():
             old_blob = bucket.blob(object_name)
             old_blob.delete()
 
-        return jsonify(authenticated_user.to_json())
+        return jsonify(authenticated_user.to_json()), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500

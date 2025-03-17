@@ -9,10 +9,12 @@ portfolios = Blueprint("portfolios", __name__, url_prefix="/api/portfolios")
 authenticated_user: User = cast(User, current_user)
 
 
+# retrieve all portfolios belonging to current user
 @portfolios.route("/all", methods=["GET"])
 @login_required
 def get_all_portfolios():
     try:
+        # get portfolios as a list
         ports_json = [
             port.to_json(include_properties=True)
             for port in authenticated_user.portfolios
@@ -26,12 +28,14 @@ def get_all_portfolios():
 @login_required
 def create_portfolio():
     try:
-        data = request.json
+        data: dict[str, str] = request.json
         name = data.get("name", "").strip()
 
+        # name must be in request body
         if not name:
             return jsonify({"error": "No name for portfolio"}), 400
 
+        # create portfolio
         new_portfolio = Portfolio(name=name, owner_id=authenticated_user.id)
         db.session.add(new_portfolio)
         db.session.commit()
@@ -42,6 +46,7 @@ def create_portfolio():
         return jsonify({"error": str(e)}), 500
 
 
+# retrieve portfolio by id
 @portfolios.route("/<int:id>", methods=["GET"])
 @login_required
 def get_portfolio(id: int):
@@ -52,6 +57,7 @@ def get_portfolio(id: int):
         if portfolio.owner_id != authenticated_user.id:
             return jsonify({"error": "Invalid request"}), 403
 
+        # get stocks in the portfolio as a list
         stocks_json = [s.to_json(include_properties=True) for s in portfolio.stocks]
 
         return (
@@ -67,6 +73,7 @@ def get_portfolio(id: int):
         return jsonify({"error": str(e)}), 500
 
 
+# delete portfolio by id
 @portfolios.route("/delete/<int:id>", methods=["DELETE"])
 @login_required
 def delete_portfolio(id: int):
@@ -86,5 +93,4 @@ def delete_portfolio(id: int):
         return jsonify({"error": str(e)})
 
 
-# todo:
-# update portfolio name
+# TODO: update portfolio name

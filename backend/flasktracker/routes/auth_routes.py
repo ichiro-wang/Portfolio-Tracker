@@ -1,11 +1,11 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
-
 from flasktracker.models import User
-from flasktracker import db, login_manager
+from flasktracker import db
+from typing import cast
 
 auth = Blueprint("auth", __name__, url_prefix="/api/auth")
-current_user: User = current_user
+authenticated_user: User = cast(User, current_user)
 
 
 # sign up a new user
@@ -15,7 +15,7 @@ current_user: User = current_user
 def signup():
     try:
         # retrieve form data
-        data = request.json
+        data: dict[str, str] = request.json
         name: str = data.get("name", "").strip()
         email: str = data.get("email", "").strip()
         password: str = data.get("password", "").strip()
@@ -57,7 +57,7 @@ def signup():
 @auth.route("/login", methods=["POST"])
 def login():
     try:
-        data = request.json
+        data: dict[str, str] = request.json
         email: str = data.get("email")
         password: str = data.get("password")
 
@@ -65,6 +65,8 @@ def login():
             return jsonify({"error": "Missing data"}), 400
 
         user: User = User.query.filter_by(email=email).first()
+
+        # verify hashed password if user with given email exists
         if user and user.validate_password(password):
             # login_user from flask login package
             login_user(user, remember=True)
@@ -86,4 +88,4 @@ def logout():
 @login_required
 def get_me():
     # current_user from flask login package
-    return jsonify(current_user.to_json(include_properties=True)), 200
+    return jsonify(authenticated_user.to_json(include_properties=True)), 200
