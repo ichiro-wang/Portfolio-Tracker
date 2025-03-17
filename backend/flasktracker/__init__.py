@@ -24,7 +24,7 @@ login_manager.login_view = None
 
 @login_manager.unauthorized_handler
 def unauthorized():
-    return jsonify({"error": "Not logged in"})
+    return jsonify({"error": "Not logged in"}), 401
 
 
 # path to firebase serviceAccountKey.json
@@ -37,18 +37,21 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
 
     db.init_app(app)
-    migrate = Migrate(app, db)
+    migrate = Migrate(app, db, command="migrate")
 
     cors.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
 
     # firebase
-    cred = credentials.Certificate(service_account_path)
-    firebase_admin.initialize_app(
-        cred,
-        {"storageBucket": f"{os.getenv("FIREBASE_PROJECT_ID")}.firebasestorage.app"},
-    )
+    if not firebase_admin._apps:
+        cred = credentials.Certificate(service_account_path)
+        firebase_admin.initialize_app(
+            cred,
+            {
+                "storageBucket": f"{os.getenv("FIREBASE_PROJECT_ID")}.firebasestorage.app"
+            },
+        )
 
     from flasktracker.routes.auth_routes import auth
     from flasktracker.routes.portfolios_routes import portfolios

@@ -3,6 +3,7 @@ from enum import Enum
 from flasktracker import db, bcrypt, login_manager
 from flasktracker.utils.get_stock_details import get_stock_details
 from sqlalchemy.orm import Mapped
+from sqlalchemy.sql import text
 from flask_login import UserMixin
 from dotenv import load_dotenv
 import os
@@ -37,6 +38,10 @@ class User(db.Model, UserMixin):
         order_by="Portfolio.created_at",
     )
 
+    created_at: Mapped[datetime] = db.Column(
+        db.DateTime, nullable=False, server_default=text("NOW()")
+    )
+
     @property
     def book_value(self):
         return sum(p.book_value for p in self.portfolios)
@@ -44,10 +49,6 @@ class User(db.Model, UserMixin):
     @property
     def market_value(self):
         return sum(p.market_value for p in self.portfolios)
-
-    created_at: Mapped[datetime] = db.Column(
-        db.DateTime, nullable=False, default=datetime.now
-    )
 
     def to_json(self, include_properties=False) -> dict:
         res = {
@@ -96,7 +97,7 @@ class Portfolio(db.Model):
     )
 
     created_at: Mapped[datetime] = db.Column(
-        db.DateTime, nullable=False, default=datetime.now
+        db.DateTime, nullable=False, server_default=text("NOW()")
     )
 
     @property
@@ -126,7 +127,7 @@ class StockWrapper(db.Model):
     __tablename__ = "stock_wrappers"
 
     id: Mapped[int] = db.Column(db.Integer, primary_key=True)
-    ticker: Mapped[str] = db.Column(db.String(255), nullable=False)
+    ticker: Mapped[str] = db.Column(db.String(255), unique=True, nullable=False)
     market_cache: Mapped[float] = db.Column(db.Float)
 
     updated_at: Mapped[datetime] = db.Column(db.DateTime)
@@ -167,7 +168,9 @@ class StockWrapper(db.Model):
 # Each stock can have several transactions
 class Stock(db.Model):
     __tablename__ = "stocks"
-
+    __table_args__ = (
+        db.UniqueConstraint("ticker", "portfolio_id", name="unique_ticker_portfolio"),
+    )
     id: Mapped[int] = db.Column(db.Integer, primary_key=True)
     ticker: Mapped[str] = db.Column(db.String(255), nullable=False)
 
@@ -194,7 +197,7 @@ class Stock(db.Model):
     )
 
     created_at: Mapped[datetime] = db.Column(
-        db.DateTime, nullable=False, default=datetime.now
+        db.DateTime, nullable=False, server_default=text("NOW()")
     )
 
     @property
@@ -284,7 +287,7 @@ class Transaction(db.Model):
         db.Enum(TransactionType), nullable=False
     )
     date: Mapped[datetime] = db.Column(
-        db.DateTime, nullable=False, default=datetime.now
+        db.DateTime, nullable=False, server_default=text("NOW()")
     )
     quantity: Mapped[float] = db.Column(db.Float, nullable=False, default=0)
     price: Mapped[float] = db.Column(db.Float, nullable=False, default=0)
