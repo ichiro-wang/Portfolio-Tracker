@@ -4,7 +4,6 @@ import { useCreateTransaction } from "./useCreateTransaction";
 import Form from "../../components/Form";
 import FormRow from "../../components/FormRow";
 import FormInput from "../../components/FormInput";
-import { formatDate } from "../../utils/formatDate";
 import ButtonGroup from "../../components/ButtonGroup";
 import Button from "../../components/Button";
 import FormOptions from "../../components/FormOptions";
@@ -60,14 +59,33 @@ const CreateTransactionForm = ({ onCloseModal }: Props) => {
             disabled={isLoading}
             id="date"
             label="Date"
-            defaultValue={formatDate(new Date())}
+            defaultValue={
+              new Date(
+                new Date().getTime() - new Date().getTimezoneOffset() * 60000,
+              )
+                .toISOString()
+                .split("T")[0]
+            }
             type="date"
             {...register("date", {
               required: "Please specify a date",
               validate: (date) => {
-                const selectedDate = new Date(date).toISOString();
-                const today = new Date().toISOString();
-                return selectedDate <= today || "Cannot pick a future date";
+                const selectedDate = new Date(date);
+                const today = new Date();
+
+                // normalize both dates to only consider yyyy-mm-dd
+                const selectedDateStr = selectedDate
+                  .toISOString()
+                  .split("T")[0];
+                const todayStr = new Date(
+                  today.getTime() - today.getTimezoneOffset() * 60000,
+                )
+                  .toISOString()
+                  .split("T")[0];
+
+                return (
+                  selectedDateStr <= todayStr || "Cannot pick a future date"
+                );
               },
             })}
           />

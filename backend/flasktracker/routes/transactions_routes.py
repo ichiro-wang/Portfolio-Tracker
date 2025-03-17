@@ -23,10 +23,10 @@ authenticated_user: User = cast(User, current_user)
 def create_transaction():
     try:
         data: dict[str, any] = request.json
-
+        
         # must include portfolio it belongs to
-        portfolio_id = data.get("portfolioId")
-        if not portfolio_id or not isinstance(portfolio_id, int):
+        portfolio_id = int(data.get("portfolioId"))
+        if not portfolio_id:
             return jsonify({"error": "No portfolio specified"}), 400
 
         # check if the portfolio belongs to the current user making the request
@@ -49,25 +49,28 @@ def create_transaction():
 
         # other values from request body
         input_date = data.get("date")
-        quantity = data.get("quantity")
-        price = data.get("price")
+        quantity = float(data.get("quantity"))
+        price = float(data.get("price"))
         ticker: str = data.get("ticker", "").strip().upper()
+        
 
         # must include these properties
         if not quantity or not price or not ticker or not input_date:
             return jsonify({"error": "Missing data"}), 400
         # validate quantity
-        if not isinstance(quantity, (int, float)) or quantity <= 0:
-            return jsonify({"error": "Invalid input"}), 400
+        if quantity <= 0:
+            return jsonify({"error": "Invalid quantity"}), 400
         # validate price
-        if not isinstance(price, (int, float)) or price <= 0:
-            return jsonify({"error": "Invalid input"}), 400
+        if price <= 0:
+            return jsonify({"error": "Invalid price"}), 400
 
+        
         # date comes in as YYYY-MM-DD string
         formatted_date = datetime.strptime(input_date, "%Y-%m-%d")
         # ensure date is not in future
         if formatted_date.date() > date.today():
             return jsonify({"error": "Transaction date cannot be in the future"}), 400
+
 
         # stock wrapper for caching api call results
         # check if one exists, if not, create one
