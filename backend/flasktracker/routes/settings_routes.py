@@ -15,19 +15,23 @@ settings = Blueprint("settings", __name__, url_prefix="/api/settings")
 authenticated_user: User = cast(User, current_user)
 
 
-# simple route for getting current user details
+"""
+get simple user details to display in settings page
+"""
 @settings.route("/me", methods=["GET"])
 @login_required
 def get_me():
     return jsonify(authenticated_user.to_json()), 200
 
 
-# receives a name and updates the current user
+"""
+allow user to update their name
+"""
 @settings.route("/update/name", methods=["POST"])
 @login_required
 def update_name():
     try:
-        data = request.json
+        data: dict[str, str] = request.json
         name = data.get("name", "").strip()
 
         if not name:
@@ -42,10 +46,12 @@ def update_name():
         return jsonify({"error": str(e)}), 500
 
 
-# receive an image file
-# shrink it using helper method
-# upload image to firebase and update link to new image
-# delete previous image from firebase
+"""
+receive an image file
+shrink it using helper method
+upload image to firebase and update link to new image
+delete previous image from firebase
+"""
 @settings.route("/update/picture", methods=["POST"])
 @login_required
 def update_picture():

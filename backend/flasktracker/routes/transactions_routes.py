@@ -17,7 +17,10 @@ transactions = Blueprint("transactions", __name__, url_prefix="/api/transactions
 authenticated_user: User = cast(User, current_user)
 
 
-# creating transaction
+"""
+create a transaction
+requires ticker, type, price, quantity, date
+"""
 @transactions.route("/create", methods=["POST"])
 @login_required
 def create_transaction():
@@ -72,9 +75,11 @@ def create_transaction():
             return jsonify({"error": "Transaction date cannot be in the future"}), 400
 
 
-        # stock wrapper for caching api call results
-        # check if one exists, if not, create one
-        # potential issue with concurrent creation
+        """
+        stock wrapper for caching api call results
+        check if one exists, if not, create one
+        potential issue with concurrent creation
+        """
         stock_wrapper: StockWrapper = (
             db.session.query(StockWrapper).filter(StockWrapper.ticker == ticker).first()
         )
@@ -114,7 +119,9 @@ def create_transaction():
         return jsonify({"error": str(e)}), 500
 
 
-# retrieve transaction by id
+"""
+retrieve transaction details based on id, belonging to the user
+"""
 @transactions.route("/<int:id>", methods=["GET"])
 @login_required
 def get_transaction(id: int):
@@ -130,7 +137,9 @@ def get_transaction(id: int):
         return jsonify({"error": str(e)})
 
 
-# delete transaction by id
+"""
+delete transaction details based on id, belonging to the user
+"""
 @transactions.route("/delete/<int:id>", methods=["DELETE"])
 @login_required
 def delete_transaction(id: int):

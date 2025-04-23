@@ -8,9 +8,11 @@ auth = Blueprint("auth", __name__, url_prefix="/api/auth")
 authenticated_user: User = cast(User, current_user)
 
 
-# sign up a new user
-# validate inputs
-# check for duplicate email existing in database
+"""
+sign up a new user
+validate inputs
+check for duplicate email existing in database
+"""
 @auth.route("/signup", methods=["POST"])
 def signup():
     try:
@@ -51,9 +53,11 @@ def signup():
         return jsonify({"error": str(e)}), 500
 
 
-# log in a user
-# check if email exists
-# verify hashed password
+"""
+log in a user
+check if email exists
+verify hashed password
+"""
 @auth.route("/login", methods=["POST"])
 def login():
     try:
@@ -76,6 +80,9 @@ def login():
         return jsonify({"error": str(e)}), 500
 
 
+"""
+logout user
+"""
 @auth.route("/logout", methods=["POST"])
 @login_required
 def logout():
@@ -83,9 +90,10 @@ def logout():
     return jsonify({"message": "Logged out"}), 200
 
 
-# simple route for verifying if the user is currently logged in
+"""
+route for verifying if the user is currently logged in
+"""
 @auth.route("/me", methods=["GET"])
 @login_required
 def get_me():
-    # current_user from flask login package
     return jsonify(authenticated_user.to_json(include_properties=True)), 200

@@ -9,7 +9,9 @@ stocks = Blueprint("stocks", __name__, url_prefix="/api/stocks")
 authenticated_user: User = cast(User, current_user)
 
 
-# enter stock id to retrieve its associated transactions
+"""
+retrieve stock details based on id, belonging to the user
+"""
 @stocks.route("/<int:id>", methods=["GET"])
 @login_required
 def get_stock_transactions(id: int):
@@ -28,7 +30,9 @@ def get_stock_transactions(id: int):
         return jsonify({"error": str(e)}), 500
 
 
-# enter stock id to delete
+"""
+delete stock details based on id, belonging to the user
+"""
 @stocks.route("/delete/<int:id>", methods=["DELETE"])
 @login_required
 def delete_stock(id: int):
