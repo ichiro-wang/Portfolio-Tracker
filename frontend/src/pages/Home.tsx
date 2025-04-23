@@ -19,16 +19,12 @@ const Home = () => {
       </div>
       <div>
         <h1 className="text-end">Totals</h1>
-        {user.bookValue != null && (
-          <p className="text-end">
-            Book Value: {formatCurrency(user.bookValue)}
-          </p>
-        )}
-        {user.marketValue != null && (
-          <p className="text-end">
-            Market Value: {formatCurrency(user.marketValue)}
-          </p>
-        )}
+        <p className="text-end">
+          Book Value: {formatCurrency(user.bookValue)}
+        </p>
+        <p className="text-end">
+          Market Value: {formatCurrency(user.marketValue)}
+        </p>
       </div>
     </Box>
   );
