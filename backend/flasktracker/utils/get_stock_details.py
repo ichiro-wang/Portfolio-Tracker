@@ -5,12 +5,10 @@ import os
 load_dotenv()
 
 
-"""
-# helper function to make call to third party stock api
-"""
-
-
 def get_stock_details(ticker: str):
+    """
+    # helper function to make call to third party stock api
+    """
     try:
         url = "https://www.alphavantage.co/query"
         params = {

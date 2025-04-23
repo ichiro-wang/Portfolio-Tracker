@@ -9,14 +9,12 @@ portfolios = Blueprint("portfolios", __name__, url_prefix="/api/portfolios")
 authenticated_user: User = cast(User, current_user)
 
 
-"""
-retrieve all portfolios belonging to current user
-"""
-
-
 @portfolios.route("/all", methods=["GET"])
 @login_required
 def get_all_portfolios():
+    """
+    retrieve all portfolios belonging to current user
+    """
     try:
         # get portfolios as a list
         ports_json = [
@@ -28,15 +26,13 @@ def get_all_portfolios():
         return jsonify({"error": str(e)})
 
 
-"""
-create a portfolio
-portfolio requires a name
-"""
-
-
 @portfolios.route("/create", methods=["POST"])
 @login_required
 def create_portfolio():
+    """
+    create a portfolio
+    portfolio requires a name
+    """
     try:
         data: dict[str, str] = request.json
         name = data.get("name", "").strip()
@@ -56,14 +52,12 @@ def create_portfolio():
         return jsonify({"error": str(e)}), 500
 
 
-"""
-retrieve a portfolio based on id, belonging to the user
-"""
-
-
 @portfolios.route("/<int:id>", methods=["GET"])
 @login_required
 def get_portfolio(id: int):
+    """
+    retrieve a portfolio based on id, belonging to the user
+    """
     try:
         portfolio: Portfolio = db.session.get(Portfolio, id)
         if not portfolio:
@@ -87,14 +81,12 @@ def get_portfolio(id: int):
         return jsonify({"error": str(e)}), 500
 
 
-"""
-delete a portfolio based on id, belonging to the user
-"""
-
-
 @portfolios.route("/delete/<int:id>", methods=["DELETE"])
 @login_required
 def delete_portfolio(id: int):
+    """
+    delete a portfolio based on id, belonging to the user
+    """
     try:
         port_to_delete = db.session.get(Portfolio, id)
         if not port_to_delete:

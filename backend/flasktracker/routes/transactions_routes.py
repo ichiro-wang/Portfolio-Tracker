@@ -17,15 +17,13 @@ transactions = Blueprint("transactions", __name__, url_prefix="/api/transactions
 authenticated_user: User = cast(User, current_user)
 
 
-"""
-create a transaction
-requires ticker, type, price, quantity, date
-"""
-
-
 @transactions.route("/create", methods=["POST"])
 @login_required
 def create_transaction():
+    """
+    create a transaction
+    requires ticker, type, price, quantity, date
+    """
     try:
         data: dict[str, any] = request.json
 
@@ -118,14 +116,12 @@ def create_transaction():
         return jsonify({"error": str(e)}), 500
 
 
-"""
-retrieve transaction details based on id, belonging to the user
-"""
-
-
 @transactions.route("/<int:id>", methods=["GET"])
 @login_required
 def get_transaction(id: int):
+    """
+    retrieve transaction details based on id, belonging to the user
+    """
     try:
         transaction: Transaction = db.session.get(Transaction, id)
         if not transaction:
@@ -138,14 +134,12 @@ def get_transaction(id: int):
         return jsonify({"error": str(e)})
 
 
-"""
-delete transaction details based on id, belonging to the user
-"""
-
-
 @transactions.route("/delete/<int:id>", methods=["DELETE"])
 @login_required
 def delete_transaction(id: int):
+    """
+    delete transaction details based on id, belonging to the user
+    """
     try:
         data: dict[str, any] = request.json
 

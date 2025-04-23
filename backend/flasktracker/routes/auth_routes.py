@@ -8,15 +8,13 @@ auth = Blueprint("auth", __name__, url_prefix="/api/auth")
 authenticated_user: User = cast(User, current_user)
 
 
-"""
-sign up a new user
-validate inputs
-check for duplicate email existing in database
-"""
-
-
 @auth.route("/signup", methods=["POST"])
 def signup():
+    """
+    sign up a new user
+    validate inputs
+    check for duplicate email existing in database
+    """
     try:
         # retrieve form data
         data: dict[str, str] = request.json
@@ -55,15 +53,13 @@ def signup():
         return jsonify({"error": str(e)}), 500
 
 
-"""
-log in a user
-check if email exists
-verify hashed password
-"""
-
-
 @auth.route("/login", methods=["POST"])
 def login():
+    """
+    log in a user
+    check if email exists
+    verify hashed password
+    """
     try:
         data: dict[str, str] = request.json
         email: str = data.get("email")
@@ -84,24 +80,20 @@ def login():
         return jsonify({"error": str(e)}), 500
 
 
-"""
-logout user
-"""
-
-
 @auth.route("/logout", methods=["POST"])
 @login_required
 def logout():
+    """
+    logout user
+    """
     logout_user()
     return jsonify({"message": "Logged out"}), 200
-
-
-"""
-route for verifying if the user is currently logged in
-"""
 
 
 @auth.route("/me", methods=["GET"])
 @login_required
 def get_me():
+    """
+    route for verifying if the user is currently logged in
+    """
     return jsonify(authenticated_user.to_json(include_properties=True)), 200
