@@ -53,7 +53,7 @@ def create_app(config_class=Config):
         firebase_admin.initialize_app(
             cred,
             {
-                "storageBucket": f"{os.getenv("FIREBASE_PROJECT_ID")}.firebasestorage.app"
+                "storageBucket": f"{os.getenv('FIREBASE_PROJECT_ID')}.firebasestorage.app"
             },
         )
 
