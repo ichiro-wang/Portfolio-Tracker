@@ -12,6 +12,8 @@ authenticated_user: User = cast(User, current_user)
 """
 retrieve all portfolios belonging to current user
 """
+
+
 @portfolios.route("/all", methods=["GET"])
 @login_required
 def get_all_portfolios():
@@ -30,6 +32,8 @@ def get_all_portfolios():
 create a portfolio
 portfolio requires a name
 """
+
+
 @portfolios.route("/create", methods=["POST"])
 @login_required
 def create_portfolio():
@@ -55,6 +59,8 @@ def create_portfolio():
 """
 retrieve a portfolio based on id, belonging to the user
 """
+
+
 @portfolios.route("/<int:id>", methods=["GET"])
 @login_required
 def get_portfolio(id: int):
@@ -81,10 +87,11 @@ def get_portfolio(id: int):
         return jsonify({"error": str(e)}), 500
 
 
-
 """
 delete a portfolio based on id, belonging to the user
 """
+
+
 @portfolios.route("/delete/<int:id>", methods=["DELETE"])
 @login_required
 def delete_portfolio(id: int):

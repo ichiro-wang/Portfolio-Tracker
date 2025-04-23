@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
@@ -22,6 +22,7 @@ login_manager = LoginManager()
 login_manager.login_view = None
 
 
+# handle protected routes when not authorized
 @login_manager.unauthorized_handler
 def unauthorized():
     return jsonify({"error": "Not logged in"}), 401
@@ -30,6 +31,9 @@ def unauthorized():
 # path to firebase serviceAccountKey.json
 backend_path = os.path.dirname(os.path.dirname(__file__))
 service_account_path = os.path.join(backend_path, "serviceAccountKey.json")
+
+# path to frontend dist folder
+frontend_dist_folder = os.path.join(os.getcwd(), "..", "frontend", "dist")
 
 
 def create_app(config_class=Config):
@@ -43,7 +47,7 @@ def create_app(config_class=Config):
     bcrypt.init_app(app)
     login_manager.init_app(app)
 
-    # firebase
+    # firebase set up
     if not firebase_admin._apps:
         cred = credentials.Certificate(service_account_path)
         firebase_admin.initialize_app(
@@ -53,6 +57,19 @@ def create_app(config_class=Config):
             },
         )
 
+    """
+    serve static files from frontend dist folder
+    this allows us to access the frontend
+    """
+
+    @app.route("/", defaults={"filename": ""})
+    @app.route("/<path:filename>")
+    def index(filename):
+        if not filename:
+            filename = "index.html"
+        return send_from_directory(frontend_dist_folder, filename)
+
+    # importing route blueprints
     from flasktracker.routes.auth_routes import auth
     from flasktracker.routes.portfolios_routes import portfolios
     from flasktracker.routes.stocks_routes import stocks

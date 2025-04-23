@@ -13,6 +13,8 @@ sign up a new user
 validate inputs
 check for duplicate email existing in database
 """
+
+
 @auth.route("/signup", methods=["POST"])
 def signup():
     try:
@@ -58,6 +60,8 @@ log in a user
 check if email exists
 verify hashed password
 """
+
+
 @auth.route("/login", methods=["POST"])
 def login():
     try:
@@ -83,6 +87,8 @@ def login():
 """
 logout user
 """
+
+
 @auth.route("/logout", methods=["POST"])
 @login_required
 def logout():
@@ -93,6 +99,8 @@ def logout():
 """
 route for verifying if the user is currently logged in
 """
+
+
 @auth.route("/me", methods=["GET"])
 @login_required
 def get_me():

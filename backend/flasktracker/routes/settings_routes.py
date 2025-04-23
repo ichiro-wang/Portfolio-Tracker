@@ -18,6 +18,8 @@ authenticated_user: User = cast(User, current_user)
 """
 get simple user details to display in settings page
 """
+
+
 @settings.route("/me", methods=["GET"])
 @login_required
 def get_me():
@@ -27,6 +29,8 @@ def get_me():
 """
 allow user to update their name
 """
+
+
 @settings.route("/update/name", methods=["POST"])
 @login_required
 def update_name():
@@ -52,6 +56,8 @@ shrink it using helper method
 upload image to firebase and update link to new image
 delete previous image from firebase
 """
+
+
 @settings.route("/update/picture", methods=["POST"])
 @login_required
 def update_picture():

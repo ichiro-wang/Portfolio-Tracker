@@ -21,12 +21,14 @@ authenticated_user: User = cast(User, current_user)
 create a transaction
 requires ticker, type, price, quantity, date
 """
+
+
 @transactions.route("/create", methods=["POST"])
 @login_required
 def create_transaction():
     try:
         data: dict[str, any] = request.json
-        
+
         # must include portfolio it belongs to
         portfolio_id = int(data.get("portfolioId"))
         if not portfolio_id:
@@ -55,7 +57,6 @@ def create_transaction():
         quantity = float(data.get("quantity"))
         price = float(data.get("price"))
         ticker: str = data.get("ticker", "").strip().upper()
-        
 
         # must include these properties
         if not quantity or not price or not ticker or not input_date:
@@ -67,13 +68,11 @@ def create_transaction():
         if price <= 0:
             return jsonify({"error": "Invalid price"}), 400
 
-        
         # date comes in as YYYY-MM-DD string
         formatted_date = datetime.strptime(input_date, "%Y-%m-%d")
         # ensure date is not in future
         if formatted_date.date() > date.today():
             return jsonify({"error": "Transaction date cannot be in the future"}), 400
-
 
         """
         stock wrapper for caching api call results
@@ -122,6 +121,8 @@ def create_transaction():
 """
 retrieve transaction details based on id, belonging to the user
 """
+
+
 @transactions.route("/<int:id>", methods=["GET"])
 @login_required
 def get_transaction(id: int):
@@ -140,6 +141,8 @@ def get_transaction(id: int):
 """
 delete transaction details based on id, belonging to the user
 """
+
+
 @transactions.route("/delete/<int:id>", methods=["DELETE"])
 @login_required
 def delete_transaction(id: int):

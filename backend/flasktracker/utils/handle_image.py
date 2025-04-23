@@ -8,6 +8,8 @@ import io
 """
 helper function for formatting image before uploading to firebase
 """
+
+
 def handle_image(file):
     # ensure filename is safe
     safe_file_name = secure_filename(file.filename)
