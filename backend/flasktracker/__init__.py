@@ -67,7 +67,11 @@ def create_app(config_class=Config):
     def index(filename):
         if not filename:
             filename = "index.html"
-        return send_from_directory(frontend_dist_folder, filename)
+        filepath = os.path.join(frontend_dist_folder, filename)
+        if os.path.exists(filepath) and os.path.isfile(filepath):
+            return send_from_directory(frontend_dist_folder, filename)
+        else:
+            return send_from_directory(frontend_dist_folder, "index.html")
 
     # importing route blueprints
     from flasktracker.routes.auth_routes import auth
