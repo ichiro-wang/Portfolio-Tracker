@@ -36,6 +36,10 @@
 
 - Backend: pytest ([here](backend/tests/))
 
+## Deployment
+
+- Deployed using Render [here](https://portfolio-tracker-klvl.onrender.com)
+- Note: Third-Party stock API has a daily limit, so market prices may not be fully updated
 
 ## App Screenshots
 ![image](https://github.com/user-attachments/assets/ae9b14d0-fdd2-40e0-af44-a1692ad31a81)
