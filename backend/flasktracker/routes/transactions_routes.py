@@ -52,8 +52,8 @@ def create_transaction():
 
         # other values from request body
         input_date = data.get("date")
-        quantity = float(data.get("quantity"))
-        price = float(data.get("price"))
+        quantity = float(data.get("quantity", 0))
+        price = float(data.get("price", 0))
         ticker: str = data.get("ticker", "").strip().upper()
 
         # must include these properties
