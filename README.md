@@ -36,6 +36,11 @@
 
 - Backend: pytest ([here](backend/tests/))
 
+## Containerization
+
+- Created containerized development environment
+- See [docker-compose.yml](docker-compose.yml)
+
 ## Deployment
 
 - Deployed using Render [here](https://portfolio-tracker-klvl.onrender.com)

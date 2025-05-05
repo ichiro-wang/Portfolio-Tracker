@@ -1,0 +1,29 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    command: npm run dev
+    ports:
+      - 5173:5173
+    volumes:
+      - ./frontend:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
+    depends_on: 
+      - backend
+    container_name: frontend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    command: flask run --host=0.0.0.0
+    ports:
+      - 5000:5000
+    volumes:
+      - ./backend:/usr/src/app
+      - backend_venv:/usr/local/lib/python3.12/site-packages
+    container_name: backend
+
+volumes:
+  node_modules:
+  backend_venv:
