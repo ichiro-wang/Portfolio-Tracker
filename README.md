@@ -44,11 +44,6 @@
 ## Deployment
 
 - Deployed using Render [here](https://portfolio-tracker-klvl.onrender.com)
-- Note: Third-Party stock API has a daily limit, so market prices may not be fully updated
-
-## App Screenshots
-![image](https://github.com/user-attachments/assets/ae9b14d0-fdd2-40e0-af44-a1692ad31a81)
-![image](https://github.com/user-attachments/assets/880b1638-2468-40da-a148-73bc402dc771)
-![image](https://github.com/user-attachments/assets/a9100695-db90-4dc9-a9f8-9574d3b2ffa2)
+- Note: Third-party stock API has a daily limit, so market prices may not be fully updated
 
 
