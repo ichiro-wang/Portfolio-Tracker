@@ -40,7 +40,7 @@
 
 - Created containerized development and testing environment
 - See [here](docker-compose.dev.yml) for dev environment
-- See [here](./backend/docker-compose.test.yml) for test environment
+- See [here](docker-compose.test.yml) for test environment
 
 ## Deployment
 
