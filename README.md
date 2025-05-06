@@ -25,7 +25,7 @@
 
 ### Frontend:
 
-- React (TypeScript)
+- TypeScript, React
   - React Router for handling routes
   - React Query for managing remote state
   - Compound Component Pattern (Example [here](frontend/src/components/Modal.tsx))
@@ -40,7 +40,9 @@
 
 - Created containerized development and testing environment
 - See [here](docker-compose.dev.yml) for dev environment
+  - Dockerfiles for frontend and backend in respective folders
 - See [here](docker-compose.test.yml) for test environment
+  - Using local Postgres database for testing
 
 ## Deployment
 

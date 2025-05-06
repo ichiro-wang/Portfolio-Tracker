@@ -11,5 +11,8 @@ export default defineConfig({
         target: "http://backend:5000",
       },
     },
+    watch: {
+      usePolling: true,
+    }
   },
 });
