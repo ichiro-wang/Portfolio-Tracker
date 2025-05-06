@@ -1,0 +1,22 @@
+services:
+  backend-test:
+    build: 
+      context: ./
+      dockerfile: Dockerfile.test
+    entrypoint: pytest
+    environment:
+      - DATABASE_URI_TESTING=postgresql://test:test@db-test:5432/testdb
+    volumes:
+      - ./:/usr/src/app
+      - backend_venv:/usr/local/lib/python3.12/site-packages
+    depends_on:
+      - db-test
+  db-test:
+    image: postgres
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=testdb
+
+volumes:
+  backend_venv:
