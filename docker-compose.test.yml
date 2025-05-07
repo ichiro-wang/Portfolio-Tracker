@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.test
     entrypoint: pytest
     environment:
-      - DATABASE_URI_TESTING=postgresql://test:test@db-test:5432/testdb
+      - DATABASE_URI_TESTING=postgresql://test:test@db-test:5432/testdb # DNS to get IP of db-test
     volumes:
       - ./:/usr/src/app
       - backend_venv:/usr/local/lib/python3.12/site-packages
