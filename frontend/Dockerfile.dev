@@ -1,7 +1,10 @@
+# backend dev environment
+
+# node image for React frontend
 FROM node:18-alpine
 
 WORKDIR /usr/src/app
 
+# copying package json and installing packages
 COPY package*.json ./
-
 RUN npm install

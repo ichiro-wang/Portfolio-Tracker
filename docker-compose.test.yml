@@ -10,8 +10,8 @@ services:
       - ./:/usr/src/app
       - backend_venv:/usr/local/lib/python3.12/site-packages
     depends_on:
-      - db-test
-  db-test:
+      - db-test # start db before starting backend
+  db-test: # using local postgres db for testing purposes
     image: postgres
     environment:
       - POSTGRES_USER=test

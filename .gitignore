@@ -2,6 +2,8 @@
 **/serviceAccountKey.json
 **/.venv
 **/__pycache__
+**/.pytest_cache
+**/db_init.py
 **/helloworld.txt
 **/requests.rest
 **/migrations

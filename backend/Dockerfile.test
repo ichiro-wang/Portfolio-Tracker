@@ -1,3 +1,5 @@
+# backend test environment
+
 FROM python:3.12-slim
 
 WORKDIR /usr/src/app
@@ -8,4 +10,5 @@ RUN pip install -r requirements.txt
 
 COPY ./ ./
 
+# using entrypoint instead of command to allow additional args such as running specific test
 ENTRYPOINT ["pytest"]
