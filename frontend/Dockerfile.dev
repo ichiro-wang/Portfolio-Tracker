@@ -1,4 +1,4 @@
-# backend dev environment
+# frontend dev environment
 
 # node image for React frontend
 FROM node:18-alpine

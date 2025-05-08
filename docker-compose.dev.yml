@@ -29,9 +29,8 @@ services:
       - backend_venv:/usr/local/lib/python3.12/site-packages
     container_name: backend
   
-  # nginx for mimicking production setup
   nginx:
-    image: nginx
+    image: nginx:1.19-alpine
     ports:
       - 80:80
     volumes:
