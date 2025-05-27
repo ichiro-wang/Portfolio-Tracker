@@ -1,0 +1,18 @@
+FROM python:3.12-slim
+
+WORKDIR /usr/src/app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt && \ 
+    pip install gunicorn
+
+COPY . .  
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV FLASK_APP=flasktracker.wsgi:app
+ENV FLASK_ENV=production
+
+EXPOSE 5000
+
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "flasktracker.wsgi:app"]

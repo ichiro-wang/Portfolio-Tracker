@@ -10,6 +10,7 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
-    allowedHosts: ["frontend"]
+    allowedHosts: ["frontend"],
   },
+  base: "/",
 });
