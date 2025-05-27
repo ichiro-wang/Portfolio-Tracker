@@ -38,11 +38,8 @@
 
 ## Containerization
 
-- Created containerized development and testing environment
-- See [here](docker-compose.dev.yml) for dev environment
-  - Dockerfiles for frontend and backend in respective folders
-- See [here](docker-compose.test.yml) for test environment
-  - Using local Postgres database for testing
+- Created containerized production, development and testing environment
+- See `docker-compose` files in root folder, as well as `Dockerfile` in respective folders
 
 ## Deployment
 
