@@ -12,6 +12,7 @@ services:
     depends_on: 
       - backend
     container_name: frontend
+
   backend:
     build:
       context: ./backend
@@ -27,6 +28,17 @@ services:
       - ./backend:/usr/src/app
       - backend_venv:/usr/local/lib/python3.12/site-packages
     container_name: backend
+  
+  nginx:
+    image: nginx:1.19-alpine
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/dev.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - frontend
+  
 
 volumes:
   node_modules:

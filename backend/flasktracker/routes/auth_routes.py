@@ -97,3 +97,7 @@ def get_me():
     route for verifying if the user is currently logged in
     """
     return jsonify(authenticated_user.to_json(include_properties=True)), 200
+
+@auth.route("/ping", methods=["GET"])
+def ping():
+    return jsonify({"message":" pong"}), 200

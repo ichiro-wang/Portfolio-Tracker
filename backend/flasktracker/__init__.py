@@ -60,8 +60,6 @@ def create_app(config_class=Config):
     """
     serve static files from frontend dist folder
     this allows us to access the frontend
-    """
-
     @app.route("/", defaults={"filename": ""})
     @app.route("/<path:filename>")
     def index(filename):
@@ -72,6 +70,7 @@ def create_app(config_class=Config):
             return send_from_directory(frontend_dist_folder, filename)
         else:
             return send_from_directory(frontend_dist_folder, "index.html")
+    """
 
     # importing route blueprints
     from flasktracker.routes.auth_routes import auth
