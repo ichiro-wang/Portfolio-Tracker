@@ -10,8 +10,8 @@ import os
 
 load_dotenv()
 
-import firebase_admin
-from firebase_admin import credentials
+# import firebase_admin
+# from firebase_admin import credentials
 
 from flasktracker.config import Config
 
@@ -48,14 +48,14 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
 
     # firebase set up
-    if not firebase_admin._apps:
-        cred = credentials.Certificate(service_account_path)
-        firebase_admin.initialize_app(
-            cred,
-            {
-                "storageBucket": f"{os.getenv('FIREBASE_PROJECT_ID')}.firebasestorage.app"
-            },
-        )
+    # if not firebase_admin._apps:
+    #     cred = credentials.Certificate(service_account_path)
+    #     firebase_admin.initialize_app(
+    #         cred,
+    #         {
+    #             "storageBucket": f"{os.getenv('FIREBASE_PROJECT_ID')}.firebasestorage.app"
+    #         },
+    #     )
 
     """
     serve static files from frontend dist folder

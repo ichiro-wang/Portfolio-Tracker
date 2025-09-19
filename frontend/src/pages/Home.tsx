@@ -14,7 +14,7 @@ const Home = () => {
   return (
     <Box className="w-[30rem] items-center justify-between">
       <div>
-        <RoundedImage src={user.profilePic} alt="Profile Pic" />
+        <RoundedImage src="/default.webp" alt="Profile Pic" />
         <h1 className="text-center">{user.name}</h1>
       </div>
       <div>

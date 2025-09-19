@@ -48,5 +48,3 @@
 
 - Deployed using Render [here](https://portfolio-tracker-klvl.onrender.com)
 - Note: Third-party stock API has a daily limit, so market prices may not be fully updated
-
-
