@@ -20,6 +20,7 @@
 - Database:
   - PostgreSQL for relational data
   - Firebase for user profile pictures
+    - this feature has been removed for now
 - ORM: SQLAlchemy
   - Models [here](backend/flasktracker/models.py)
 
@@ -45,5 +46,3 @@
 
 - Deployed using Render [here](https://portfolio-tracker-klvl.onrender.com)
 - Note: Third-party stock API has a daily limit, so market prices may not be fully updated
-
-

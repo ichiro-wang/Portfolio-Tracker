@@ -12,7 +12,7 @@ export const signup = async ({
   password,
 }: SignupArgs): Promise<UserType> => {
   const res = await axios.post("/api/auth/signup", { name, email, password });
-
+  
   if (res.data.error) {
     throw new Error(res.data.error);
   }
