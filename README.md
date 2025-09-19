@@ -20,6 +20,7 @@
 - Database:
   - PostgreSQL for relational data
   - Firebase for user profile pictures
+    - this feature has been removed for now
 - ORM: SQLAlchemy
   - Models [here](backend/flasktracker/models.py)
 
