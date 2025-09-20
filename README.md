@@ -1,5 +1,10 @@
 # Portfolio Tracker
 
+## Deployment
+
+- Deployed using Render [here](https://portfolio-tracker-klvl.onrender.com)
+- Note: Third-party stock API has a daily limit, so market prices may not be fully updated
+
 ## Description
 
 - A web application designed for investors to manage their portfolios efficiently. Users can track stock performance in real-time, manage transactions, and gain insights into their investments.
@@ -42,7 +47,5 @@
 - Created containerized production, development and testing environment
 - See `docker-compose` files in root folder, as well as `Dockerfile` in respective folders
 
-## Deployment
 
-- Deployed using Render [here](https://portfolio-tracker-klvl.onrender.com)
-- Note: Third-party stock API has a daily limit, so market prices may not be fully updated
+
