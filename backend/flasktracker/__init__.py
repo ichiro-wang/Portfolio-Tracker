@@ -30,7 +30,7 @@ def unauthorized():
 
 # path to firebase serviceAccountKey.json
 backend_path = os.path.dirname(os.path.dirname(__file__))
-service_account_path = os.path.join(backend_path, "serviceAccountKey.json")
+# service_account_path = os.path.join(backend_path, "serviceAccountKey.json")
 
 # path to frontend dist folder
 frontend_dist_folder = os.path.join(os.getcwd(), "..", "frontend", "dist")
@@ -60,6 +60,7 @@ def create_app(config_class=Config):
     """
     serve static files from frontend dist folder
     this allows us to access the frontend
+    """
     @app.route("/", defaults={"filename": ""})
     @app.route("/<path:filename>")
     def index(filename):
@@ -70,7 +71,6 @@ def create_app(config_class=Config):
             return send_from_directory(frontend_dist_folder, filename)
         else:
             return send_from_directory(frontend_dist_folder, "index.html")
-    """
 
     # importing route blueprints
     from flasktracker.routes.auth_routes import auth
