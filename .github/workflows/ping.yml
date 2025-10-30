@@ -1,0 +1,12 @@
+# pings the website to avoid downtime since I am using the free tier
+name: Ping Render
+on:
+  schedule:
+    - cron: "*/5 * * * *" # every 5 min
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Curl request to Render
+        run: |
+          curl -s -o /dev/null -w "HTTP Status: %{http_code}\n" https://portfolio-tracker-klvl.onrender.com/home
