@@ -3,6 +3,7 @@
 ## Deployment
 
 - Deployed using Render [here](https://portfolio-tracker-klvl.onrender.com)
+  - There is a default account with credentials already entered in the login page for anyone who wants to see what an existing account looks like
 - Note: Third-party stock API has a daily limit, so market prices may not be fully updated
 
 ## Description
@@ -46,6 +47,7 @@
 
 - Created containerized production, development and testing environment
 - See `docker-compose` files in root folder, as well as `Dockerfile` in respective folders
+
 
 
 
